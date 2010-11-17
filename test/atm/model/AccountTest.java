@@ -41,13 +41,46 @@ public class AccountTest {
 
     @Test
     public void accountLoadsBalance() {
-        assertEquals(200.0, account.getBalance(), precision);
+        assertEquals(600.0, account.getBalance(), precision);
     }
 
     @Test
     public void canMakeDeposit() {
         account.deposit(200.0);
-        assertEquals(400.0, account.getBalance(), precision);
+        assertEquals(800.0, account.getBalance(), precision);
+    }
+
+    @Test
+    public void canMakeWithdrawal() {
+        account.withdraw(50.0);
+        assertEquals(550.0, account.getBalance(), precision);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void doesNotAllowWithdrawalsNotMultipleOfFive() {
+        account.withdraw(57.0);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void doesNotAllowWithdrawalsBellowTen() {
+        account.withdraw(5.0);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void doesNotAllowWithdrawalsAboveTwoHundred() {
+        account.withdraw(205.0);
+    }
+
+    @Test(expected=ApplicationException.class)
+    public void doesNotAllowWithdrawalWhenNotEnoughFunds() {
+        account.setBalance(50.0);
+        account.withdraw(100.0);
+    }
+
+    @Test
+    public void allowsWithrawingAllFunds() {
+        account.withdraw(600.0);
+        assertEquals(0.0, account.getBalance(), precision);
     }
 
 }

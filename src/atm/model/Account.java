@@ -47,7 +47,15 @@ public class Account {
         return balance;
     }
 
+    void setBalance(double balance) {
+        this.balance = balance;
+    }
+
     public void deposit(double d) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void withdraw(double d) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
