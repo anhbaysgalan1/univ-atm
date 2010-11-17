@@ -1,8 +1,8 @@
 
 package atm.model;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -11,9 +11,10 @@ import java.util.Scanner;
  */
 public class AccountBroker {
 
-    public Account getAccountWithPin(String pin) {
+    public Account getAccountWithPin(String pin) throws IOException {
 
-        File dataFile = new File("data" + File.separator + "clientes.txt");
+        Account fetchedAccount = null;
+        File dataFile = new File("clientes.txt");
 
         try {
             Scanner fileScanner = new Scanner(dataFile);
@@ -25,14 +26,17 @@ public class AccountBroker {
                 if (lineScanner.hasNext() && lineScanner.next().equals(pin)) {
                     String number = lineScanner.next();
                     String client = lineScanner.next();
+                    String source = lineScanner.next();
 
-                    return new Account(number, client);
+                    fetchedAccount = new Account(number, client);
+                    fetchedAccount.load(new File(source));
+                    return fetchedAccount;
                 }
             }
         } catch (FileNotFoundException e) {
         }
 
-        return null;
+        return fetchedAccount;
     }
 
 }

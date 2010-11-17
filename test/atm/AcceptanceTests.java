@@ -25,7 +25,7 @@ public class AcceptanceTests {
     }
 
     @Test
-    public void canGetAccount() {
+    public void canGetAccount() throws Exception {
         AccountBroker accounts = new AccountBroker();
         Account account = accounts.getAccountWithPin("1234");
         assertEquals("0010029289641272009", account.getNumber());
