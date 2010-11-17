@@ -13,16 +13,13 @@ import static org.junit.Assert.*;
  */
 public class AcceptanceTests {
 
-    public AcceptanceTests() {
-    }
+    public AcceptanceTests() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Test
     public void canGetAccount() throws Exception {
