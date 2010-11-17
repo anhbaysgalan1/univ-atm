@@ -47,7 +47,7 @@ public class Account {
         return balance;
     }
 
-    void deposit(double d) {
+    public void deposit(double d) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
