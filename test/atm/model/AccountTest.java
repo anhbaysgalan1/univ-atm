@@ -44,4 +44,10 @@ public class AccountTest {
         assertEquals(200.0, account.getBalance(), precision);
     }
 
+    @Test
+    public void canMakeDeposit() {
+        account.deposit(200.0);
+        assertEquals(400.0, account.getBalance(), precision);
+    }
+
 }
