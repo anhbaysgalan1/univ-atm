@@ -29,9 +29,8 @@ public class AccountTest {
 
     @Before
     public void setUp() throws java.io.IOException {
-        testFile.copy(testFileTemplate);
         account = new Account("0010029289641272009", "Rui Filipe Tavares Melo");
-        account.load(testFile);
+        account.setBalance(600.0);
     }
 
     @After
@@ -40,7 +39,10 @@ public class AccountTest {
     }
 
     @Test
-    public void accountLoadsBalance() {
+    public void accountLoadsBalance() throws java.io.IOException {
+        account.setBalance(0.0);
+        testFile.copy(testFileTemplate);
+        account.load(testFile);
         assertEquals(600.0, account.getBalance(), precision);
     }
 
