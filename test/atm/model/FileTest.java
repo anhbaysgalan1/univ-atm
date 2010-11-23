@@ -7,18 +7,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-
 /**
  *
  * @author heldercorreia
  */
 public class FileTest {
 
-    private File template = new File("testClienteTemplate.dat");
+    private final File template = new File("testClienteTemplate.dat");
     private File instance;
 
-    public FileTest() {
-    }
+    public FileTest() {}
 
     @BeforeClass
     public static void setUpClass() throws Exception {}
