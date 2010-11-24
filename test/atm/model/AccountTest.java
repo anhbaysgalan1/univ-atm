@@ -69,6 +69,13 @@ public class AccountTest {
         assertEquals(550.0, account.getBalance(), precision);
     }
 
+    @Test
+    public void negativeValuesWithdrawAPositiveAmmount() throws IOException {
+        account.setBalance(100.0);
+        account.withdraw(-50.0);
+        assertEquals(50.0, account.getBalance(), precision);
+    }
+
     @Test(expected=IllegalArgumentException.class)
     public void doesNotAllowWithdrawalsNotMultipleOfFive() {
         account.setBalance(600.0);
