@@ -1,14 +1,13 @@
 
 package atm.model;
 
+import java.io.UnsupportedEncodingException;
+import org.junit.Before;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-import org.junit.After;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import org.junit.Before;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,14 +19,14 @@ import static org.junit.Assert.*;
  */
 public class AccountPersistTest {
 
-    private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     private final double precision = 1e-5;
+    private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     private final File testFileTemplate = new File("testClienteTemplate.dat");
+    private final File testFileWritten  = new File("testClienteWritten.dat");
     private File testFile = new File("testCliente.dat");
     private AccountPersist dataSource;
 
-    public AccountPersistTest() throws IOException {
-        testFile.copy(testFileTemplate);
+    public AccountPersistTest() {
         dataSource = new AccountPersist(testFile);
     }
 
@@ -36,6 +35,11 @@ public class AccountPersistTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {}
+
+    @Before
+    public void setUp() throws IOException {
+        testFile.copy(testFileTemplate);
+    }
 
     @Test
     public void canReadBalance() throws IOException {
@@ -74,5 +78,22 @@ public class AccountPersistTest {
             );
             System.out.println(actual.get(i));
         }
+    }
+
+    @Test
+    public void canWriteToFile() throws ParseException,
+                                        UnsupportedEncodingException,
+                                        IOException {
+        dataSource.setBalance(400);
+        dataSource.addTransaction(new Transaction(
+            df.parse("20/11/2010 20:13:44"),
+            "Depósito MB", Transaction.Type.CREDIT, 650
+        ));
+        dataSource.addTransaction(new Transaction(
+            df.parse("17/11/2010 14:20:12"),
+            "Pagamento de serviços Electricidade", Transaction.Type.DEBIT, 250
+        ));
+        dataSource.save();
+        assertTrue("not saved correctly", testFile.equals(testFileWritten));
     }
 }

@@ -1,8 +1,12 @@
 
 package atm.model;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,6 +79,36 @@ class AccountPersist {
     }
 
     /**
+     * Define o saldo.
+
+     * @param balance  o saldo a definir
+     */
+    void setBalance(double ammount) {
+        balance = new Double(ammount);
+    }
+
+    /**
+     * Define os movimentos de conta, usando uma lista de movimentos
+     *
+     * @param transactions  lista com os movimentos do tipo Transaction
+     */
+    void setTransactions(ArrayList<Transaction> transactions) {
+        this.transactions = (ArrayList<Transaction>) transactions.clone();
+    }
+
+    /**
+     * Adiciona um movimento de conta
+     *
+     * @param transaction  movimento de conta a adicionar
+     */
+    void addTransaction(Transaction transaction) {
+        if (transactions == null) {
+            transactions = new ArrayList<Transaction>();
+        }
+        transactions.add(transaction);
+    }
+
+    /**
      * Retorna uma lista (ArrayList) com os movimentos, se já tiverem
      * sido carregados, ou carregando-os do ficheiro caso contrário, e
      * assumindo que não há erros de leitura.
@@ -90,6 +124,22 @@ class AccountPersist {
         return (ArrayList<Transaction>) transactions.clone();
     }
 
+    /**
+     * Guarda os dados no ficheiro.
+     */
+    void save() throws UnsupportedEncodingException, IOException {
+        if (!data.exists()) {
+            data.createNewFile();
+        }
+        BufferedWriter out = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(data), "UTF8")
+        );
+        out.write(balance.toString());
+
+        for (Transaction transaction : transactions) {
+            out.write(transaction.toString());
+        }
+    }
 
     /**
      * Carrega os dados do ficheiro para este objecto,
@@ -109,7 +159,7 @@ class AccountPersist {
         transactions = new ArrayList<Transaction>();
 
         try {
-            Scanner fileScanner = new Scanner(data, "UTF-8");
+            Scanner fileScanner = new Scanner(data, "UTF8");
             if (!fileScanner.hasNextDouble()) {
                 throw new IOException(BAD_FORMAT_ERR);
             }

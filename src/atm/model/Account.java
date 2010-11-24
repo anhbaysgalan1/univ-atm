@@ -67,6 +67,13 @@ public class Account {
         loaded       = true;
     }
 
+    /** Guarda os dados na persistência de dados. */
+    public void save() throws java.io.IOException {
+        data.setBalance(balance);
+        data.setTransactions(transactions);
+        data.save();
+    }
+
     /**
      * Define o saldo, sem ler do ficheiro de dados.
      *
@@ -90,18 +97,6 @@ public class Account {
             load();
         }
         return balance;
-    }
-
-    /**
-     * Retorna uma lista (ArrayList) com os movimentos, se já tiverem
-     * sido carregados, ou carregando-os da persistência caso contrário,
-     * e assumindo que não há erros de leitura.
-     */
-    ArrayList<Transaction> getTransactions() throws java.io.IOException {
-        if (!loaded) {
-            load();
-        }
-        return (ArrayList<Transaction>) transactions.clone();
     }
 
     /**
