@@ -1,6 +1,8 @@
 
 package atm.model;
 
+import java.util.ArrayList;
+
 /**
  * Representa uma conta bancária, segundo o ponto de vista
  * de uma caixa multibanco.
@@ -23,6 +25,9 @@ public class Account {
 
     /** Saldo da conta */
     private double balance = 0.0;
+
+    /** Colecção com os movimentos */
+    private ArrayList<Transaction> transactions;
 
     /**
      * Construtor por defeito.
@@ -57,8 +62,9 @@ public class Account {
      * Permite ler o ficheiro apenas quando necessário (lazy loading).
      */
     private void load() throws java.io.IOException {
-        balance = data.getBalance();
-        loaded  = true;
+        balance      = data.getBalance();
+        transactions = data.getTransactions();
+        loaded       = true;
     }
 
     /**
@@ -84,6 +90,18 @@ public class Account {
             load();
         }
         return balance;
+    }
+
+    /**
+     * Retorna uma lista (ArrayList) com os movimentos, se já tiverem
+     * sido carregados, ou carregando-os da persistência caso contrário,
+     * e assumindo que não há erros de leitura.
+     */
+    ArrayList<Transaction> getTransactions() throws java.io.IOException {
+        if (!loaded) {
+            load();
+        }
+        return (ArrayList<Transaction>) transactions.clone();
     }
 
     /**
