@@ -15,6 +15,8 @@ import atm.model.*;
 @Suite.SuiteClasses({ 
     AcceptanceTests.class,
     FileTest.class,
+    TransactionTest.class,
+    AccountPersistTest.class,
     AccountTest.class
 })
 public class TestSuite {
