@@ -160,12 +160,7 @@ class AccountPersist {
 
         try {
             Scanner fileScanner = new Scanner(data, "UTF8");
-            if (!fileScanner.hasNextDouble()) {
-                throw new IOException(BAD_FORMAT_ERR);
-            }
-            balance = new Double(fileScanner.nextDouble());
-            fileScanner.nextLine(); // discard the leftover enter
-
+            balance = Double.parseDouble(fileScanner.nextLine());
             while (fileScanner.hasNextLine()) {
                 parseLine(fileScanner.nextLine());
             }
