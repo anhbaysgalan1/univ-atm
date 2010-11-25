@@ -24,7 +24,6 @@ static AccountBroker accountB=new AccountBroker();
             printErrorMessage(
                 "Erro do Sistema. Dirija-se ao multibanco mais próximo."
             );
-            printErrorMessage(e.getMessage());
             System.exit(1);
         }
     }
