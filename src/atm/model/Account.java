@@ -105,7 +105,7 @@ public class Account {
      * @param d  valor a depositar
      */
     public void deposit(double d) {
-        balance += d;
+            balance += Math.abs(d);
     }
 
     /**
