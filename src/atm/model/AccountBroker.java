@@ -28,7 +28,7 @@ public class AccountBroker {
         File dataFile = new File("clientes.txt");
 
         try {
-            Scanner fileScanner = new Scanner(dataFile);
+            Scanner fileScanner = new Scanner(dataFile, "UTF8");
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
 
@@ -44,6 +44,7 @@ public class AccountBroker {
                 }
             }
         } catch (FileNotFoundException e) {
+            throw new IOException("Ficheiro de dados não encontrado!");
         }
 
         return fetchedAccount;

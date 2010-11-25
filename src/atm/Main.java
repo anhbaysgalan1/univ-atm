@@ -5,8 +5,7 @@ import java.util.Scanner;
 import atm.model.Account;
 import atm.model.AccountBroker;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 /**
  *
  * @author heldercorreia
@@ -19,14 +18,16 @@ static AccountBroker accountB=new AccountBroker();
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {userMenu(login());
-
-        }catch (IOException e){
-            fatalError(e);
+        try {
+            userMenu(login());
+        } catch (IOException e) {
+            printErrorMessage(
+                "Erro do Sistema. Dirija-se ao multibanco mais próximo."
+            );
+            printErrorMessage(e.getMessage());
+            System.exit(1);
         }
     }
-
-    
 
     public static Account login() throws IOException {
         Account account = null;
@@ -34,7 +35,7 @@ static AccountBroker accountB=new AccountBroker();
         askInput("PIN: ");
         String password = input.nextLine();
         
-          account = aBroker.getAccountWithPin(password);
+        account = aBroker.getAccountWithPin(password);
         printNewLine();
 
         if (account == null) {
@@ -83,14 +84,7 @@ static AccountBroker accountB=new AccountBroker();
         printNewLine();
         userMenu(account);
     }
-    private static void fatalError(){
-        printErrorMessage("Erro do Sistema\nDirija-se ao multibanco mais proximo");
-        System.exit(1);
-    }
-    private static void fatalError(Exception e) {
-        printErrorMessage(e.getMessage());
-        System.exit(1);
-    }
+
     public static void withdrawMenu(Account account) throws IOException{
         System.out.println("---LEVANTAMENTOS---");
         System.out.println("1. 20       2. 50");
