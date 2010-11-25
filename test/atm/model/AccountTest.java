@@ -102,8 +102,8 @@ public class AccountTest {
 
     @Test
     public void allowsWithrawingAllFunds() throws IOException {
-        account.setBalance(600.0);
-        account.withdraw(600.0);
+        account.setBalance(150.0);
+        account.withdraw(150.0);
         assertEquals(0.0, account.getBalance(), precision);
     }
 

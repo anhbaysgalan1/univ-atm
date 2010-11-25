@@ -114,7 +114,20 @@ public class Account {
      * @param d  valor a levantar
      */
     public void withdraw(double d) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        d = Math.abs(d);
+        if (d < 10 || d > 200) {
+            throw new IllegalArgumentException(
+                "O valor do levantamento tem que ser entre 10€ e 200€"
+            );
+        }
+        if (d % 5 != 0) {
+            throw new IllegalArgumentException(
+                "O valor que introduziu tem que ser múltiplo de 5"
+            );
+        }
+        if (d > balance) {
+            throw new IllegalArgumentException("Sem saldo suficiente");
+        }
+        balance -= d;
     }
-
 }
