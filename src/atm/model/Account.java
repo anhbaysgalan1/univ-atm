@@ -130,4 +130,19 @@ public class Account {
         }
         balance -= d;
     }
+    
+    /*Metodo para efectuar pagamento de serviços. 
+     * @param d valor do levantamento
+     * Levantamente só é realizado caso haja saldo disponivel   
+     */
+    public void paymentBill(double d) {
+        d = Math.abs(d);
+        if (d > balance) {
+            throw new IllegalArgumentException("Sem saldo suficiente");
+        }
+        else{
+            balance -= d;
+            System.out.println("Pagamento efectuado com sucesso");
+        }
+    }
 }
