@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -127,7 +126,7 @@ class AccountPersist {
     /**
      * Guarda os dados no ficheiro.
      */
-    void save() throws UnsupportedEncodingException, IOException {
+    void save() throws IOException {
         if (!data.exists()) {
             data.createNewFile();
         }
@@ -139,6 +138,7 @@ class AccountPersist {
         for (Transaction transaction : transactions) {
             out.write(transaction.toString());
         }
+        out.close();
     }
 
     /**
