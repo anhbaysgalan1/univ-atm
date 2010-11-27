@@ -162,7 +162,7 @@ class AccountPersist {
             Scanner fileScanner = new Scanner(data, "UTF8");
             balance = Double.parseDouble(fileScanner.nextLine());
             while (fileScanner.hasNextLine()) {
-                parseLine(fileScanner.nextLine());
+                parseTransaction(fileScanner.nextLine());
             }
         } catch (FileNotFoundException e) {
             data.createNewFile();
@@ -182,7 +182,7 @@ class AccountPersist {
      *
      * @param line  linha de movimento de conta do ficheiro de dados
      */
-    private void parseLine(String line) {
+    private void parseTransaction(String line) {
         String[] tokens = line.split(",");
         if (tokens.length == 4) {
             try {
