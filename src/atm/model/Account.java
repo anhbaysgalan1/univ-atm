@@ -88,6 +88,13 @@ public class Account {
         }
     }
 
+    /** Retorna o último movimento adicionado */
+    public Transaction getLastTransaction() {
+        return !transactions.isEmpty()
+                    ? transactions.get(transactions.size()-1)
+                    : null;
+    }
+
     /** Carrega os dados da persistência de dados. */
     private void load() {
         manager.load(this);

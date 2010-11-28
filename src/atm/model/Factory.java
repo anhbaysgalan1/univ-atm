@@ -4,7 +4,7 @@ package atm.model;
 import java.io.File;
 
 public class Factory {
-    
+
     /**
      * Permite abstracção na localização dos ficheiros de dados.
      *

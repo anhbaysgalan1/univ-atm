@@ -13,6 +13,13 @@ public class AtmClientTest {
     private AccountManager manager;
     private Account account;
 
+    private void assertEqualTransactions(
+                Transaction expected, Transaction actual) {
+        assertTrue(actual.getDescription().equals(expected.getDescription()));
+        assertEquals(expected.getAmmount(), actual.getAmmount(), 1e-6);
+        assertEquals(expected.getType(), actual.getType());
+    }
+
     @Before
     public void setUp() {
         atm     = new AtmClient(300);
@@ -32,6 +39,13 @@ public class AtmClientTest {
     public void depositDoesNotUpdateFunds() {
         atm.deposit(50, account);
         assertEquals(300, atm.getFunds(), PRECISION);
+    }
+
+    @Test
+    public void depositIsRegistered() {
+        atm.deposit(300, account);
+        Transaction expected = Transaction.newCredit("Depósito MB", 300);
+        assertEqualTransactions(expected, account.getLastTransaction());
     }
 
     @Test
@@ -74,4 +88,10 @@ public class AtmClientTest {
         assertEquals(0, atm.getFunds(), PRECISION);
     }
 
+    @Test
+    public void withdrawalIsRegistered() {
+        atm.withdraw(200, account);
+        Transaction expected = Transaction.newDebit("Levantamento MB", 200);
+        assertEqualTransactions(expected, account.getLastTransaction());
+    }
 }

@@ -70,6 +70,16 @@ public class Transaction {
         return new Transaction(new Date(), description, Type.DEBIT, value);
     }
 
+    /** Retorna a descrição do movimento */
+    public String getDescription() {
+        return description;
+    }
+
+    /** Retorna o valor do movimento */
+    public double getAmmount() {
+        return value.doubleValue();
+    }
+
     /** Retorna o tipo do movimento */
     Type getType() {
         return type;

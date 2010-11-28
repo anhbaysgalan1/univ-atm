@@ -54,7 +54,10 @@ public class AtmClient {
      * @param account  conta para onde depositar o dinheiro
      */
     public void deposit(double d, Account account) {
-        account.deposit(Math.abs(d));
+        d = Math.abs(d);
+        account.deposit(d);
+        account.addTransaction(Transaction.newCredit("Depósito MB", d));
+        account.save();
     }
 
     /**
@@ -86,6 +89,8 @@ public class AtmClient {
             );
         }
         account.withdraw(d);
+        account.addTransaction(Transaction.newDebit("Levantamento MB", d));
+        account.save();
         funds -= d;
     }
 
