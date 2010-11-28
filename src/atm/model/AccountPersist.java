@@ -2,52 +2,29 @@
 package atm.model;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
 /**
  * Persistência de dados das contas.
  *
- * Normalmente seria este objecto a compor um do tipo Account,
- * não o contrário, mas não queria que o Main tivesse conhecimento
- * da persistência, para simplificar.
- *
- * Deste modo, esta classe não deve ser usada fora do modelo
+ * Esta classe não deve ser usada fora do modelo
  * (package private), e é usada para separação de responsabilidades,
  * o que facilita uma futura manutenção.
  *
  * Em vez de armazenar os dados num ficheiro, pode ser desejado usar
  * uma base de dados ou chamadas pela rede (RPC), como faz um
  * multibanco verdadeiro. As alterações são só precisas aqui.
- *
- * @author heldercorreia
  */
-class AccountPersist {
-
-    /** Mensagem de erro quando o ficheiro está mal formatado */
-    private final String BAD_FORMAT_ERR =
-            "Ficheiro com dados do cliente formatado incorrectamente";
+class AccountPersist implements AccountManager {
 
     /** Ficheiro onde estão armazenados os dados */
     private File data;
-
-    /**
-     * Saldo.
-     * Como objecto, para poder comparar null
-     * como não tendo sido carregado (lazy loading).
-     */
-    private Double balance;
-
-    /** Colecção com os movimentos */
-    private ArrayList<Transaction> transactions;
 
     /**
      * Constructor.
@@ -59,90 +36,53 @@ class AccountPersist {
      */
     AccountPersist(File data) {
         this.data = data;
-    }
-
-    /**
-     * Retorna o saldo, se já tiver sido carregado, ou carrega-o do
-     * ficheiro caso contrário, e assumindo que não há erros de
-     * leitura.
-     *
-     * @see load()
-     *
-     * @return  o saldo
-     */
-    double getBalance() throws IOException {
-        if (balance == null) {
-            load();
+        if (!data.exists()) {
+            createDataFile();
         }
-        return balance.doubleValue();
     }
 
-    /**
-     * Define o saldo.
-
-     * @param balance  o saldo a definir
-     */
-    void setBalance(double ammount) {
-        balance = new Double(ammount);
-    }
-
-    /**
-     * Define os movimentos de conta, usando uma lista de movimentos
-     *
-     * @param transactions  lista com os movimentos do tipo Transaction
-     */
-    void setTransactions(ArrayList<Transaction> transactions) {
-        this.transactions = (ArrayList<Transaction>) transactions.clone();
-    }
-
-    /**
-     * Adiciona um movimento de conta
-     *
-     * @param transaction  movimento de conta a adicionar
-     */
-    void addTransaction(Transaction transaction) {
-        if (transactions == null) {
-            transactions = new ArrayList<Transaction>();
+    /** Tenta criar ficheiro, apontado pelo File passado para o construtor */
+    private void createDataFile() {
+        try {
+            data.createNewFile();
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(
+                "Não foi possível criar novo ficheiro de dados."
+            );
         }
-        transactions.add(transaction);
-    }
-
-    /**
-     * Retorna uma lista (ArrayList) com os movimentos, se já tiverem
-     * sido carregados, ou carregando-os do ficheiro caso contrário, e
-     * assumindo que não há erros de leitura.
-     *
-     * @see load()
-     *
-     * @return  colecção com os movimentos (objectos do tipo Transaction)
-     */
-    ArrayList<Transaction> getTransactions() throws IOException {
-        if (transactions == null) {
-            load();
-        }
-        return (ArrayList<Transaction>) transactions.clone();
     }
 
     /**
      * Guarda os dados no ficheiro.
+     *
+     * @param account  objecto do tipo Account de onde se quer guardar os dados
      */
-    void save() throws IOException {
-        if (!data.exists()) {
-            data.createNewFile();
-        }
-        BufferedWriter out = new BufferedWriter(
+    @Override
+    public void save(Account account) {
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(data), "UTF8")
-        );
-        out.write(balance.toString());
+            );
+            out.write(Double.toString(account.getBalance()));
 
-        for (Transaction transaction : transactions) {
-            out.write(transaction.toString());
+            for (Transaction transaction : account.getTransactions()) {
+                out.write(transaction.toString());
+            }
+        // lidar erros a partir daqui
+        } catch (java.io.FileNotFoundException e) {
+            createDataFile();
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(
+                "Problema ao gravar dados para o disco"
+            );
         }
-        out.close();
+        // @todo: adicionar finally com out.close()
+        // ignorado por agora, porque não estava a mudar de linha
     }
 
     /**
-     * Carrega os dados do ficheiro para este objecto,
+     * Carrega os dados do ficheiro para a conta,
      * assumindo que não há erros de leitura.
      *
      * Formato do ficheiro:
@@ -152,22 +92,35 @@ class AccountPersist {
      * .
      * .
      *
-     * É criado um ficheiro novo, com dados a "zero" se ele não existir.
+     * É criado um ficheiro novo, se ele não existir.
+     *
+     * @param account   objecto do tipo Account para onde carregar os dados
      */
-    private void load() throws IOException {
-        balance = new Double(0.0);
-        transactions = new ArrayList<Transaction>();
+    @Override
+    public void load(Account account) {
+        account.setBalance(0);
+        account.emptyTransactions();
 
         try {
             Scanner fileScanner = new Scanner(data, "UTF8");
-            balance = Double.parseDouble(fileScanner.nextLine());
-            while (fileScanner.hasNextLine()) {
-                parseTransaction(fileScanner.nextLine());
+
+            if (fileScanner.hasNextLine()) {
+                account.setBalance(Double.parseDouble(fileScanner.nextLine()));
+
+                while (fileScanner.hasNextLine()) {
+                    account.addTransaction(
+                        parseTransaction(fileScanner.nextLine())
+                    );
+                }
             }
-        } catch (FileNotFoundException e) {
-            data.createNewFile();
+        } catch (java.io.FileNotFoundException e) {
+            createDataFile();
+        } catch (NumberFormatException e) {
+            // ignora... saldo fica 0.0
+            // idealmente corrigido no próximo save()
         }
     }
+
 
     /**
      * Carrega movimentos de conta lidos pelo load()
@@ -178,11 +131,12 @@ class AccountPersist {
      * Formato da data: YYYYMMDDHHIISS
      * Tipos de movimento: Débito|Crédito
      *
-     * @see load()
+     * @see load(Account)
      *
      * @param line  linha de movimento de conta do ficheiro de dados
+     * @return      objecto Transaction, com o movimento de conta
      */
-    private void parseTransaction(String line) {
+    private Transaction parseTransaction(String line) {
         String[] tokens = line.split(",");
         if (tokens.length == 4) {
             try {
@@ -193,12 +147,15 @@ class AccountPersist {
                 Transaction.Type type = parseTransactionType(tokens[2]);
                 double ammount        = Double.parseDouble(tokens[3]);
 
-                transactions.add(new Transaction(
-                    date, description, type, ammount
-                ));
-            } catch (ParseException ex) {
+                return new Transaction(date, description, type, ammount);
+
+            } catch (java.text.ParseException e) {
+                // ignora
+            } catch (IllegalArgumentException e) {
+                // ignora
             }
         }
+        return null;
     }
 
     /**
@@ -221,5 +178,4 @@ class AccountPersist {
             "Unknown transaction type ("+type+")."
         );
     }
-
 }

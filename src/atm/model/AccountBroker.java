@@ -1,6 +1,7 @@
 
 package atm.model;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
@@ -8,8 +9,6 @@ import java.util.Scanner;
 /**
  * Objecto responsável por gerir as várias contas, principalmente
  * autenticar o utilizador com base no seu pin de conta.
- *
- * @author heldercorreia
  */
 public class AccountBroker {
 
@@ -23,9 +22,9 @@ public class AccountBroker {
      * @param pin  o pin da conta, para autenticar
      * @return     objecto de conta se encontrada, null caso contrário
      */
-    public Account getAccountWithPin(String pin) throws IOException {
+    public Account getAccountWithPin(String pin) {
         Account fetchedAccount = null;
-        File dataFile = new File("clientes.txt");
+        File dataFile = Factory.getFile("clientes.txt");
 
         try {
             Scanner fileScanner = new Scanner(dataFile, "UTF8");
@@ -39,12 +38,14 @@ public class AccountBroker {
                 Scanner lineScanner = new Scanner(line);
                 lineScanner.useDelimiter(",");
                 if (lineScanner.hasNext() && lineScanner.next().equals(pin)) {
-                    fetchedAccount = parseLine(line);
+                    fetchedAccount = parseAccount(line);
                     return fetchedAccount;
                 }
             }
         } catch (FileNotFoundException e) {
-            throw new IOException("Ficheiro de dados não encontrado!");
+            throw new RuntimeException("Ficheiro de dados não encontrado!");
+        } catch (IOException e) {
+            throw new RuntimeException("Erro de leitura do ficheiro de dados");
         }
 
         return fetchedAccount;
@@ -61,7 +62,7 @@ public class AccountBroker {
      * @param line  linha formatada do ficheiro de clientes
      * @return      objecto de conta
      */
-    private Account parseLine(String line) throws IOException {
+    private Account parseAccount(String line) throws IOException {
         String[] tokens = line.split(",");
         if (tokens.length != 4) {
             throw new IOException(
@@ -71,8 +72,7 @@ public class AccountBroker {
         String number = tokens[1];
         String client = tokens[2];
         String source = tokens[3];
-        AccountPersist data = new AccountPersist(new File(source));
+        AccountPersist data = new AccountPersist(Factory.getFile(source));
         return new Account(number, client, data);
     }
-
 }

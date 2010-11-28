@@ -6,8 +6,6 @@ import java.util.ArrayList;
 /**
  * Representa uma conta bancária, segundo o ponto de vista
  * de uma caixa multibanco.
- *
- * @author heldercorreia
  */
 public class Account {
 
@@ -18,16 +16,13 @@ public class Account {
     private String client;
 
     /** Objecto de persistência, com a fonte de dados */
-    private AccountPersist data;
-
-    /** Indica se os dados já foram carregados da fonte de dados */
-    private boolean loaded = false;
+    private AccountManager manager;
 
     /** Saldo da conta */
     private double balance = 0.0;
 
     /** Colecção com os movimentos */
-    private ArrayList<Transaction> transactions;
+    private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     /**
      * Construtor por defeito.
@@ -41,10 +36,11 @@ public class Account {
      * @param client  nome do cliente
      * @param data    objecto de persistência, com a fonte dos dados
      */
-    Account(String number, String client, AccountPersist data) {
-        this.number = number;
-        this.client = client;
-        this.data   = data;
+    Account(String number, String client, AccountManager manager) {
+        this.number  = number;
+        this.client  = client;
+        this.manager = manager;
+        load();
     }
 
     /** Retorna o número de conta passado para o construtor */
@@ -57,46 +53,49 @@ public class Account {
         return client;
     }
 
-    /**
-     * Carrega os dados da persistência de dados.
-     * Permite ler o ficheiro apenas quando necessário (lazy loading).
-     */
-    private void load() throws java.io.IOException {
-        balance      = data.getBalance();
-        transactions = data.getTransactions();
-        loaded       = true;
-    }
-
-    /** Guarda os dados na persistência de dados. */
-    public void save() throws java.io.IOException {
-        data.setBalance(balance);
-        data.setTransactions(transactions);
-        data.save();
+    /** Retorna o saldo */
+    public double getBalance() {
+        return balance;
     }
 
     /**
-     * Define o saldo, sem ler do ficheiro de dados.
-     *
-     * Usado nos testes para evitar depender da leitura do ficheiro de dados.
-     *
-     * @see AccountTest
+     * Define o saldo. Usado pelos testes e pela persistência de dados
      *
      * @param balance  o saldo a definir
      */
     void setBalance(double balance) {
         this.balance = balance;
-        this.loaded  = true;
+    }
+
+    /** Retorna os movimentos de conta */
+    public ArrayList<Transaction> getTransactions() {
+        return (ArrayList<Transaction>) transactions.clone();
+    }
+
+    /** Limpa os movimentos. Útil para retornar a um estado inicial */
+    public void emptyTransactions() {
+        transactions.clear();
     }
 
     /**
-     * Retorna o saldo, retirando o valor da persistência de dados, caso
-     * não tenha ainda sido carregada.
+     * Regista um movimento de conta
+     *
+     * @param transaction  objecto de movimento de conta Transaction
      */
-    public double getBalance() throws java.io.IOException {
-        if (!loaded) {
-            load();
+    public void addTransaction(Transaction transaction) {
+        if (transaction != null) {
+            transactions.add(transaction);
         }
-        return balance;
+    }
+
+    /** Carrega os dados da persistência de dados. */
+    private void load() {
+        manager.load(this);
+    }
+
+    /** Guarda os dados na persistência de dados. */
+    public void save() {
+        manager.save(this);
     }
 
     /**
