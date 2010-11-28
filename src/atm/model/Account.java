@@ -2,6 +2,7 @@
 package atm.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representa uma conta bancária, segundo o ponto de vista
@@ -95,6 +96,23 @@ public class Account {
                     : null;
     }
 
+    /**
+     * Retorna os últimos max movimentos,
+     * por ordem do mais recente ao mais antigo
+     */
+    public List<Transaction> getLatestTransactions(int max) {
+        if (transactions.size() < max) {
+            max = transactions.size();
+        }
+
+        List<Transaction> latest = new ArrayList<Transaction>(max);
+        for (int i = max-1; i >= 0; i--) {
+            latest.add(transactions.get(i));
+        }
+
+        return latest;
+    }
+
     /** Carrega os dados da persistência de dados. */
     private void load() {
         manager.load(this);
@@ -122,7 +140,7 @@ public class Account {
     public void withdraw(double d) {
         d = Math.abs(d);
         if (d > balance) {
-            throw new IllegalArgumentException("Sem saldo suficiente na conta");
+            throw new IllegalArgumentException("Não tem saldo suficiente");
         }
         balance -= d;
     }
