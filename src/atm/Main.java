@@ -3,7 +3,7 @@ package atm;
 
 import java.util.Scanner;
 import atm.model.Account;
-import atm.model.AccountBroker;
+import atm.model.AtmClient;
 import java.io.IOException;
 
 /**
@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class Main {
 static Scanner input=new Scanner(System.in);
-static AccountBroker accountB=new AccountBroker();
+static AtmClient accountB=new AtmClient();
 
     /**
      * @param args the command line arguments
@@ -30,7 +30,7 @@ static AccountBroker accountB=new AccountBroker();
 
     public static Account login() throws IOException {
         Account account = null;
-        AccountBroker aBroker=new AccountBroker();
+        AtmClient aBroker=new AtmClient();
         askInput("PIN: ");
         String password = input.nextLine();
         

@@ -54,24 +54,6 @@ public class AccountTest {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void doesNotAllowWithdrawalsNotMultipleOfFive() {
-        account.setBalance(600.0);
-        account.withdraw(57.0);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void doesNotAllowWithdrawalsBellowTen() {
-        account.setBalance(600.0);
-        account.withdraw(5.0);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void doesNotAllowWithdrawalsAboveTwoHundred() {
-        account.setBalance(600.0);
-        account.withdraw(205.0);
-    }
-
-    @Test(expected=IllegalArgumentException.class)
     public void doesNotAllowWithdrawalWhenNotEnoughFunds() {
         account.setBalance(50.0);
         account.withdraw(100.0);
