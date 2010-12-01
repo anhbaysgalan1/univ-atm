@@ -8,7 +8,14 @@ import java.util.List;
  * Representa uma conta bancária, segundo o ponto de vista
  * de uma caixa multibanco.
  */
-public class Account {
+public class Account implements java.io.Serializable {
+
+    /**
+     * Versão de serialização
+     *
+     * @see http://www.mkyong.com/java-best-practices/understand-the-serialversionuid/
+     */
+    private static final long serialVersionUID = 1L;
 
     /** O número de conta */
     private String number;
@@ -16,22 +23,22 @@ public class Account {
     /** O nome do cliente */
     private String client;
 
-    /** Objecto de persistência, com a fonte de dados */
-    private AccountManager manager;
-
     /** Saldo da conta */
     private double balance = 0.0;
 
     /** Colecção com os movimentos */
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
+    /** Objecto de persistência, com a fonte de dados (não serializado) */
+    private transient AccountManager manager;
+
     /**
      * Construtor por defeito.
      *
      * Objectos deste tipo apenas devem ser instanciados
-     * pelo AccountBroker, ou pelos testes.
+     * pelo AtmClient, ou pelos testes.
      *
-     * @see AccountBroker.getAccountWithPin(String)
+     * @see AtmClient.getAccountWithPin(String)
      *
      * @param number  número de conta
      * @param client  nome do cliente
@@ -42,6 +49,11 @@ public class Account {
         this.client  = client;
         this.manager = manager;
         load();
+    }
+
+    /** Carrega os dados da persistência de dados */
+    private void load() {
+        manager.load(this);
     }
 
     /** Retorna o número de conta passado para o construtor */
@@ -69,13 +81,8 @@ public class Account {
     }
 
     /** Retorna os movimentos de conta */
-    public ArrayList<Transaction> getTransactions() {
+    ArrayList<Transaction> getTransactions() {
         return (ArrayList<Transaction>) transactions.clone();
-    }
-
-    /** Limpa os movimentos. Útil para retornar a um estado inicial */
-    public void emptyTransactions() {
-        transactions.clear();
     }
 
     /**
@@ -83,14 +90,14 @@ public class Account {
      *
      * @param transaction  objecto de movimento de conta Transaction
      */
-    public void addTransaction(Transaction transaction) {
+    void addTransaction(Transaction transaction) {
         if (transaction != null) {
             transactions.add(transaction);
         }
     }
 
     /** Retorna o último movimento adicionado */
-    public Transaction getLastTransaction() {
+    Transaction getLastTransaction() {
         return !transactions.isEmpty()
                     ? transactions.get(transactions.size()-1)
                     : null;
@@ -113,50 +120,47 @@ public class Account {
         return latest;
     }
 
-    /** Carrega os dados da persistência de dados. */
-    private void load() {
-        manager.load(this);
-    }
-
-    /** Guarda os dados na persistência de dados. */
-    public void save() {
+    /**
+     * Processa um movimento, debitando ou creditando da conta o valor
+     * movimentado, assim como registando o movimento. Por último,
+     * se tudo tiver corrido bem, a operação é guardada em ficheiro.
+     *
+     * @param transaction  objecto de movimento de conta
+     */
+    public void processTransaction(Transaction transaction) {
+        double ammount = transaction.getAmmount();
+        switch (transaction.getType()) {
+            case CREDIT:
+                credit(ammount);
+                break;
+            case DEBIT:
+                debit(ammount);
+                break;
+        }
+        addTransaction(transaction);
         manager.save(this);
     }
 
     /**
-     * Efectua um depósito.
+     * Coloca dinheiro na conta.
      *
-     * @param d  valor a depositar
+     * @param d  valor a creditar
      */
-    public void deposit(double d) {
+    public void credit(double d) {
         balance += Math.abs(d);
     }
 
     /**
-     * Efectua um levantamento, se houver saldo suficiente
+     * Retira dinheiro da conta, tipicamente para um levantamento ou
+     * pagamento de serviços.
      *
-     * @param d  valor a levantar
+     * @param d  valor a debitar
      */
-    public void withdraw(double d) {
+    public void debit(double d) {
         d = Math.abs(d);
         if (d > balance) {
             throw new IllegalArgumentException("Não tem saldo suficiente");
         }
         balance -= d;
-    }
-    
-    /*Metodo para efectuar pagamento de serviços. 
-     * @param d valor do levantamento
-     * Levantamente só é realizado caso haja saldo disponivel   
-     */
-    public void paymentBill(double d) {
-        d = Math.abs(d);
-        if (d > balance) {
-            throw new IllegalArgumentException("Sem saldo suficiente");
-        }
-        else{
-            balance -= d;
-            System.out.println("Pagamento efectuado com sucesso");
-        }
     }
 }

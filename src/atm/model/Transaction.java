@@ -7,10 +7,15 @@ import java.util.Date;
 
 /**
  * Representa um movimento de conta.
- *
- * @author heldercorreia
  */
-public class Transaction {
+public class Transaction implements java.io.Serializable {
+
+    /**
+     * Versão de serialização
+     *
+     * @see http://www.mkyong.com/java-best-practices/understand-the-serialversionuid/
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Tipo enumerado com os tipos de movimentos */
     enum Type {
@@ -116,16 +121,20 @@ public class Transaction {
             return false;
         }
         final Transaction other = (Transaction) obj;
-        if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
+        if (this.date != other.date &&
+                (this.date == null || !this.date.equals(other.date))) {
             return false;
         }
-        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+        if ((this.description == null)
+                ? (other.description != null)
+                : !this.description.equals(other.description)) {
             return false;
         }
         if (this.type != other.type) {
             return false;
         }
-        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+        if (this.value != other.value &&
+                (this.value == null || !this.value.equals(other.value))) {
             return false;
         }
         return true;

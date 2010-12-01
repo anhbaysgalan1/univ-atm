@@ -60,7 +60,7 @@ public class Main {
                 printStatusMessage(
                     "Saldo Actual: " + formatCurrency(account.getBalance())
                 );
-                pause(false);
+                pause();
                 break;
 
             case 3:
@@ -68,7 +68,7 @@ public class Main {
                 for (Transaction latest : account.getLatestTransactions(10)) {
                     System.out.println(latest);
                 }
-                pause(false);
+                pause();
                 break;
 
             case 4:
@@ -128,7 +128,7 @@ public class Main {
     /** Levantamento de outras importâncias */
     public static void withdrawOther(Account account) {
         try{
-            askInput("Valor de levantamento: ");
+            askInput("Montante: ");
             int ammount = input.nextInt();
             clearInput();
             atm.withdraw(ammount, account);
@@ -139,94 +139,94 @@ public class Main {
         }
     }
 
-    public static void servicesPayment(Account account) {
-        System.out.println("---PAGAMENTOS DE SERVIÇOS---");
-        System.out.println("1. Conta de Electricidade");
-        System.out.println("2. Conta da Água");
-        System.out.println("3. Carregamento Telemóvel");
-
-        askInput("\n> ");
-
-        switch (getOption()){
-            case 1:
-                payBill(account);
-                break;
-            case 2:
-                payBill(account);
-                break;
-            case 3:
-                payCell(account);
-                break;
-            default:
-                printErrorMessage("Opção inválida");
-
-        }
-        printNewLine();
-        userMenu(account);
-    }
-
-/*
- *Metodo para efectuar o pagamento de contas de electricidade e agua
- *Em falta integraçao com o registo de movimentos de conta
- */
-    private static void payBill(Account account) {
-        int ent, ref;
-        double payment;
-
-        System.out.print("Entidade:");
-        ent=input.nextInt();
-        while(ent<10000 && ent>99999){
-            System.out.println("Entidade inválida");
-            System.out.print("Entidade:");
-            ent=input.nextInt();
-        }
-        printNewLine();
-        System.out.print("Referência: ");ref=input.nextInt();
-        while(ref<100000000 && ref>999999999){
-            System.out.println("Referência inválida");
-            System.out.print("Referência: ");ref=input.nextInt();
-        }
-        printNewLine();
-
-        System.out.println("Valor do pagamento: ");payment=input.nextDouble();
-        account.paymentBill(payment);//Em falta registar este movimento ao movimento de conta
-
-
-    }
-    /*
-     Metodo para efectuar carregamentos de telemovel
-     Em falta registo no movimento de dados
-     */
-    public static void payCell(Account account) {
-        int cellRef,valueOp;
-        System.out.print("Referência telemóvel: ");cellRef=input.nextInt();
-        printNewLine();
-        while(cellRef<900000000 && cellRef>999999999){
-            System.out.println("Referência inválida");
-            System.out.print("Referência telemóvel: ");cellRef=input.nextInt();
-        }
-        printNewLine();
-        System.out.println("Selecione o montante do carregamento");
-        System.out.println("1. 5€    2. 10€    3. 20€");
-        askInput("\n>");
-        switch (getOption()){
-            case 1:
-                account.paymentBill(5);
-                break;
-            case 2:
-                account.paymentBill(10);
-                break;
-            case 3:
-                account.paymentBill(20);
-                break;
-            default:
-                printErrorMessage("Opção inválida");
-
-        }
-        printNewLine();
-        userMenu(account);
-
-    }
+//    public static void servicesPayment(Account account) {
+//        System.out.println("---PAGAMENTOS DE SERVIÇOS---");
+//        System.out.println("1. Conta de Electricidade");
+//        System.out.println("2. Conta da Água");
+//        System.out.println("3. Carregamento Telemóvel");
+//
+//        askInput("\n> ");
+//
+//        switch (getOption()){
+//            case 1:
+//                payBill(account);
+//                break;
+//            case 2:
+//                payBill(account);
+//                break;
+//            case 3:
+//                payCell(account);
+//                break;
+//            default:
+//                printErrorMessage("Opção inválida");
+//
+//        }
+//        printNewLine();
+//        userMenu(account);
+//    }
+//
+///*
+// *Metodo para efectuar o pagamento de contas de electricidade e agua
+// *Em falta integraçao com o registo de movimentos de conta
+// */
+//    private static void payBill(Account account) {
+//        int ent, ref;
+//        double payment;
+//
+//        System.out.print("Entidade:");
+//        ent=input.nextInt();
+//        while(ent<10000 && ent>99999){
+//            System.out.println("Entidade inválida");
+//            System.out.print("Entidade:");
+//            ent=input.nextInt();
+//        }
+//        printNewLine();
+//        System.out.print("Referência: ");ref=input.nextInt();
+//        while(ref<100000000 && ref>999999999){
+//            System.out.println("Referência inválida");
+//            System.out.print("Referência: ");ref=input.nextInt();
+//        }
+//        printNewLine();
+//
+//        System.out.println("Valor do pagamento: ");payment=input.nextDouble();
+//        account.paymentBill(payment);//Em falta registar este movimento ao movimento de conta
+//
+//
+//    }
+//    /*
+//     Metodo para efectuar carregamentos de telemovel
+//     Em falta registo no movimento de dados
+//     */
+//    public static void payCell(Account account) {
+//        int cellRef,valueOp;
+//        System.out.print("Referência telemóvel: ");cellRef=input.nextInt();
+//        printNewLine();
+//        while(cellRef<900000000 && cellRef>999999999){
+//            System.out.println("Referência inválida");
+//            System.out.print("Referência telemóvel: ");cellRef=input.nextInt();
+//        }
+//        printNewLine();
+//        System.out.println("Selecione o montante do carregamento");
+//        System.out.println("1. 5€    2. 10€    3. 20€");
+//        askInput("\n>");
+//        switch (getOption()){
+//            case 1:
+//                account.paymentBill(5);
+//                break;
+//            case 2:
+//                account.paymentBill(10);
+//                break;
+//            case 3:
+//                account.paymentBill(20);
+//                break;
+//            default:
+//                printErrorMessage("Opção inválida");
+//
+//        }
+//        printNewLine();
+//        userMenu(account);
+//
+//    }
     
 
     // Helper methods
@@ -234,11 +234,7 @@ public class Main {
         System.out.println("\n\n--- "+header.toUpperCase()+" ---");
     }
 
-    private static void pause() {
-        pause(true);
-    }
-    public static void pause(boolean clear) {
-        if (clear) clearInput();
+    public static void pause() {
         printStatusMessage("\n<Prima ENTER para continuar…>\n");
         input.nextLine();
     }

@@ -13,12 +13,12 @@ public class AcceptanceTests {
 
     @Before
     public void setUp() {
-        atm     = new AtmClient(1000);
-        account = atm.getAccountWithPin("1234");
+        atm = new AtmClient(1000);
     }
 
     @Test
     public void canGetAccount() {
+        account = atm.getAccountWithPin("1234");
         assertEquals("0010029289641272009", account.getNumber());
         assertEquals("Rui Filipe Tavares Melo", account.getClient());
     }

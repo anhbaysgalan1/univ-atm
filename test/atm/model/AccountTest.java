@@ -26,43 +26,43 @@ public class AccountTest {
     }
 
     @Test
-    public void canMakeDeposit() {
+    public void canMakeCredit() {
         account.setBalance(600.0);
-        account.deposit(200.0);
+        account.credit(200.0);
         assertEquals(800.0, account.getBalance(), PRECISION);
     }
 
     @Test
-    public void negativeValuesDepositAPositiveAmmount() {
+    public void negativeValuesCreditAPositiveAmmount() {
         account.setBalance(100.0);
-        account.deposit(-50.0);
+        account.credit(-50.0);
         assertEquals(150.0, account.getBalance(), PRECISION);
     }
 
     @Test
-    public void canMakeWithdrawal() {
+    public void canMakeDebit() {
         account.setBalance(600.0);
-        account.withdraw(50.0);
+        account.debit(50.0);
         assertEquals(550.0, account.getBalance(), PRECISION);
     }
 
     @Test
-    public void negativeValuesWithdrawAPositiveAmmount() {
+    public void negativeValuesDebitAPositiveAmmount() {
         account.setBalance(100.0);
-        account.withdraw(-50.0);
+        account.debit(-50.0);
         assertEquals(50.0, account.getBalance(), PRECISION);
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void doesNotAllowWithdrawalWhenNotEnoughFunds() {
+    public void doesNotAllowDebitWhenNotEnoughFunds() {
         account.setBalance(50.0);
-        account.withdraw(100.0);
+        account.debit(100.0);
     }
 
     @Test
-    public void allowsWithrawingAllFunds() {
+    public void allowsDebitOfAllFunds() {
         account.setBalance(150.0);
-        account.withdraw(150.0);
+        account.debit(150.0);
         assertEquals(0.0, account.getBalance(), PRECISION);
     }
 }
