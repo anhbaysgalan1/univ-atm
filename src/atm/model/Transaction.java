@@ -10,6 +10,13 @@ import java.util.Date;
  */
 public class Transaction implements java.io.Serializable {
 
+    /**
+     * Versão de serialização
+     *
+     * @see http://www.mkyong.com/java-best-practices/understand-the-serialversionuid/
+     */
+    private static final long serialVersionUID = 1L;
+
     /** Tipo enumerado com os tipos de movimentos */
     enum Type {
         DEBIT  { @Override public String toString() { return "Débito"; } },
