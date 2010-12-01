@@ -54,9 +54,9 @@ public class AtmClient {
      */
     public void deposit(double d, Account account) {
         d = Math.abs(d);
-        account.credit(d);
-        account.addTransaction(Transaction.newCredit("Depósito MB", d));
-        account.save();
+        account.processTransaction(
+            Transaction.newCredit("Depósito MB", d)
+        );
     }
 
     /**
@@ -87,9 +87,9 @@ public class AtmClient {
                 "Não existem notas de "+(d%5)+" euros."
             );
         }
-        account.debit(d);
-        account.addTransaction(Transaction.newDebit("Levantamento MB", d));
-        account.save();
+        account.processTransaction(
+            Transaction.newDebit("Levantamento MB", d)
+        );
         funds -= d;
     }
 

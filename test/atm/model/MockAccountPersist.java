@@ -3,7 +3,7 @@ package atm.model;
 
 /**
  * Duplo que permite testar isoladamente Account,
- * sem necessitar ler do sistema de ficheiros.
+ * sem necessitar ler ou escrever o sistema de ficheiros.
  *
  * @see AccountTest
  */

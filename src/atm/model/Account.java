@@ -44,6 +44,11 @@ public class Account implements java.io.Serializable {
         load();
     }
 
+    /** Carrega os dados da persistência de dados */
+    private void load() {
+        manager.load(this);
+    }
+
     /** Retorna o número de conta passado para o construtor */
     public String getNumber() {
         return number;
@@ -69,7 +74,7 @@ public class Account implements java.io.Serializable {
     }
 
     /** Retorna os movimentos de conta */
-    public ArrayList<Transaction> getTransactions() {
+    ArrayList<Transaction> getTransactions() {
         return (ArrayList<Transaction>) transactions.clone();
     }
 
@@ -78,7 +83,7 @@ public class Account implements java.io.Serializable {
      *
      * @param transaction  objecto de movimento de conta Transaction
      */
-    public void addTransaction(Transaction transaction) {
+    void addTransaction(Transaction transaction) {
         if (transaction != null) {
             transactions.add(transaction);
         }
@@ -108,13 +113,24 @@ public class Account implements java.io.Serializable {
         return latest;
     }
 
-    /** Carrega os dados da persistência de dados. */
-    private void load() {
-        manager.load(this);
-    }
-
-    /** Guarda os dados na persistência de dados. */
-    public void save() {
+    /**
+     * Processa um movimento, debitando ou creditando da conta o valor
+     * movimentado, assim como registando o movimento. Por último,
+     * se tudo tiver corrido bem, a operação é guardada em ficheiro.
+     *
+     * @param transaction  objecto de movimento de conta
+     */
+    public void processTransaction(Transaction transaction) {
+        double ammount = transaction.getAmmount();
+        switch (transaction.getType()) {
+            case CREDIT:
+                credit(ammount);
+                break;
+            case DEBIT:
+                debit(ammount);
+                break;
+        }
+        addTransaction(transaction);
         manager.save(this);
     }
 

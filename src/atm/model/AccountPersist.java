@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -93,9 +94,8 @@ class AccountPersist implements AccountManager, java.io.Serializable {
             account = (Account) in.readObject();
             in.close();
         } catch (ClassNotFoundException e) {
-            // ignorado... não pode acontecer
+        } catch (InvalidClassException e) {
         } catch (EOFException e) {
-            // fim do ficheiro
         } catch (IOException e) {
             throw new RuntimeException("Problema ao recuperar dados.");
         }
