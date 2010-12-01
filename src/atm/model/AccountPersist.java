@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -21,7 +20,7 @@ import java.io.ObjectOutputStream;
  * uma base de dados ou chamadas pela rede (RPC), como faz um
  * multibanco verdadeiro. As alterações são só precisas aqui.
  */
-class AccountPersist implements AccountManager, java.io.Serializable {
+class AccountPersist implements AccountManager {
 
     /** Ficheiro onde estão armazenados os dados */
     private File data;
@@ -94,7 +93,6 @@ class AccountPersist implements AccountManager, java.io.Serializable {
             account = (Account) in.readObject();
             in.close();
         } catch (ClassNotFoundException e) {
-        } catch (InvalidClassException e) {
         } catch (EOFException e) {
         } catch (IOException e) {
             throw new RuntimeException("Problema ao recuperar dados.");

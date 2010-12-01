@@ -10,6 +10,13 @@ import java.util.List;
  */
 public class Account implements java.io.Serializable {
 
+    /**
+     * Versão de serialização
+     *
+     * @see http://www.mkyong.com/java-best-practices/understand-the-serialversionuid/
+     */
+    private static final long serialVersionUID = 1L;
+
     /** O número de conta */
     private String number;
 
@@ -22,8 +29,8 @@ public class Account implements java.io.Serializable {
     /** Colecção com os movimentos */
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-    /** Objecto de persistência, com a fonte de dados */
-    private AccountManager manager;
+    /** Objecto de persistência, com a fonte de dados (não serializado) */
+    private transient AccountManager manager;
 
     /**
      * Construtor por defeito.
