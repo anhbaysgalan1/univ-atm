@@ -102,7 +102,7 @@ public class AtmClientTest {
         atm.payWaterBill(payment, account);
 
         assertEquals(expected, account.getLastTransaction());
-        assertEquals(439.47, account.getBalance(), 1e-6);
+        assertEquals(539.47, account.getBalance(), 1e-6);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class AtmClientTest {
         atm.payElectricityBill(payment, account);
 
         assertEquals(expected, account.getLastTransaction());
-        assertEquals(439.47, account.getBalance(), 1e-6);
+        assertEquals(539.47, account.getBalance(), 1e-6);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class AtmClientTest {
         atm.payPhoneBill(payment, account);
 
         assertEquals(expected, account.getLastTransaction());
-        assertEquals(439.47, account.getBalance(), 1e-6);
+        assertEquals(539.47, account.getBalance(), 1e-6);
     }
 
     @Test(expected=IllegalArgumentException.class)
