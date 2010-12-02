@@ -7,14 +7,7 @@ import java.util.List;
 /**
  * Representa uma conta bancária.
  */
-public class Account implements java.io.Serializable {
-
-    /**
-     * Versão de serialização
-     *
-     * @see http://www.mkyong.com/java-best-practices/understand-the-serialversionuid/
-     */
-    private static final long serialVersionUID = 1L;
+public class Account {
 
     /** O número de conta */
     private String number;

@@ -17,14 +17,12 @@ public class AccountMapperTest {
 
     @Rule public TemporaryFolder bucket = new TemporaryFolder();
 
-    private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-    private File testFile;
     private Account account;
     private AccountMapper mapper;
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     private void setUpTransactions() throws ParseException {
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         transactions.add(new Transaction(
             df.parse("15/11/2010 17:03:33"),
             "Depósito MB", Transaction.Type.CREDIT, 500
@@ -43,13 +41,16 @@ public class AccountMapperTest {
         ));
     }
 
+    private void setUpAccount(double startingBalance) {
+        account = new Account("123456789", "Dummy User", mapper);
+        account.setBalance(startingBalance);
+    }
+
     @Before
     public void setUp() throws IOException, ParseException {
+        mapper = new AccountMapper(bucket.newFile("testFile.dat"));
         setUpTransactions();
-        testFile = bucket.newFile("testFile.dat");
-        mapper   = new AccountMapper(testFile);
-        account  = new Account("123456789", "Dummy User", mapper);
-        account.setBalance(600);
+        setUpAccount(600);
         for (Transaction transaction : transactions) {
             account.addTransaction(transaction);
         }
@@ -57,14 +58,10 @@ public class AccountMapperTest {
     }
 
     @Test
-    public void canReadBalance() {
-        assertEquals(600, mapper.restore().getBalance(), 1e-6);
-    }
-
-    @Test
-    public void canReadTransactions() throws ParseException {
-        ArrayList<Transaction> actual   = mapper.restore().getTransactions();
-        ArrayList<Transaction> expected = transactions;
-        assertTrue(actual.containsAll(expected));
+    public void canLoadDataFromMapper() {
+        setUpAccount(0);
+        mapper.load(account);
+        assertEquals(600, account.getBalance(), 1e-6);
+        assertTrue(account.getTransactions().containsAll(transactions));
     }
 }

@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 /**
  * Persistência de dados das contas.
@@ -44,7 +45,7 @@ class AccountMapper {
     private void createDataFile() {
         try {
             data.createNewFile();
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(
                 "Não foi possível criar novo ficheiro de dados."
             );
@@ -52,7 +53,7 @@ class AccountMapper {
     }
 
     /**
-     * Guarda (serializa) o objecto num ficheiro
+     * Guarda o saldo e movimentos de conta no ficheiro
      *
      * @param account  objecto do tipo Account para guardar
      */
@@ -60,41 +61,35 @@ class AccountMapper {
         ObjectOutputStream out = null;
         try {
             out = new ObjectOutputStream(new FileOutputStream(data));
-            out.writeObject(account);
+            out.writeDouble(account.getBalance());
+            out.writeObject(account.getTransactions());
             out.close();
         } catch (IOException e) {
-            throw new RuntimeException("Problema ao guardar ficheiro.");
+            throw new RuntimeException("Problema ao guardar dados.");
         }
     }
 
     /**
-     * Carrega os dados do ficheiro para a conta.
+     * Carrega o saldo e movimentos de conta do ficheiro
      *
      * @param account  objecto do tipo Account para onde carregar os dados
      */
     public void load(Account account) {
-        Account restored = restore();
-        if (restored != null) {
-            account.setBalance(restored.getBalance());
-            for (Transaction trans : restored.getTransactions()) {
-                account.addTransaction(trans);
-            }
-        }
-    }
-
-    /** Restaura uma conta serializada do ficheiro de dados  */
-    public Account restore() {
-        Account account = null;
         ObjectInputStream in = null;
         try {
             in = new ObjectInputStream(new FileInputStream(data));
-            account = (Account) in.readObject();
+            account.setBalance(in.readDouble());
+            for (Transaction trans : (List<Transaction>) in.readObject()) {
+                account.addTransaction(trans);
+            }
             in.close();
         } catch (ClassNotFoundException e) {
+            throw new RuntimeException(
+                "Objecto desconhecido ao carregar dados."
+            );
         } catch (EOFException e) {
         } catch (IOException e) {
             throw new RuntimeException("Problema ao recuperar dados.");
         }
-        return account;
     }
 }
