@@ -106,7 +106,7 @@ public class AtmClientTest {
     }
 
     @Test
-    void canPayElectricityBill() {
+    public void canPayElectricityBill() {
         Transaction expected =
             Transaction.newDebit("Pagamento de serviços Electricidade", 60.53);
 
