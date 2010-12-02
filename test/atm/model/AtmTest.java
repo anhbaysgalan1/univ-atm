@@ -162,4 +162,19 @@ public class AtmTest {
     public void cantGetEntityFromUnknownPhoneNetwork() {
         atm.getPhoneEntity("123456789");
     }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantGetEntityFromALessThenNineDigitPhone() {
+        atm.getPhoneEntity("91234462");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantGetEntityFromAMoreThenNineDigitPhone() {
+        atm.getPhoneEntity("9123423465");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantGetEntityFromNotANumber() {
+        atm.getPhoneEntity("912b3c234");
+    }
 }

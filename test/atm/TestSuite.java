@@ -11,6 +11,7 @@ import atm.model.*;
     AtmTest.class,
     TransactionTest.class,
     AccountMapperTest.class,
-    AccountTest.class
+    AccountTest.class,
+    PaymentTest.class
 })
 public class TestSuite {}
