@@ -158,9 +158,9 @@ public class Atm {
      */
     public String getPhoneEntity(String phone){
         switch (phone.charAt(1)){
-            case '1': return "10158";
-            case '3': return "20638";
-            case '6': return "10559";
+            case '1': return "10158";  // vodafone
+            case '3': return "20638";  // optimus
+            case '6': return "10559";  // tmn
             default:
                 throw new IllegalArgumentException(
                     "Número inválido ou Operadora desconhecida!"
