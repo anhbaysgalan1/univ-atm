@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class AccountPersistTest {
+public class AccountMapperTest {
 
     @Rule public TemporaryFolder bucket = new TemporaryFolder();
 
@@ -21,7 +21,7 @@ public class AccountPersistTest {
 
     private File testFile;
     private Account account;
-    private AccountPersist persist;
+    private AccountMapper mapper;
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     private void setUpTransactions() throws ParseException {
@@ -47,23 +47,23 @@ public class AccountPersistTest {
     public void setUp() throws IOException, ParseException {
         setUpTransactions();
         testFile = bucket.newFile("testFile.dat");
-        persist  = new AccountPersist(testFile);
-        account  = new Account("123456789", "Dummy User", persist);
+        mapper   = new AccountMapper(testFile);
+        account  = new Account("123456789", "Dummy User", mapper);
         account.setBalance(600);
         for (Transaction transaction : transactions) {
             account.addTransaction(transaction);
         }
-        persist.save(account);
+        mapper.save(account);
     }
 
     @Test
     public void canReadBalance() {
-        assertEquals(600, persist.restore().getBalance(), 1e-6);
+        assertEquals(600, mapper.restore().getBalance(), 1e-6);
     }
 
     @Test
     public void canReadTransactions() throws ParseException {
-        ArrayList<Transaction> actual   = persist.restore().getTransactions();
+        ArrayList<Transaction> actual   = mapper.restore().getTransactions();
         ArrayList<Transaction> expected = transactions;
         assertTrue(actual.containsAll(expected));
     }

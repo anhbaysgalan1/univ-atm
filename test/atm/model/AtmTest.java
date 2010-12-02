@@ -1,32 +1,38 @@
 
 package atm.model;
 
+import java.io.IOException;
+import org.junit.rules.TemporaryFolder;
+import org.junit.Rule;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class AtmClientTest {
+public class AtmTest {
+
+    @Rule public TemporaryFolder bucket = new TemporaryFolder();
 
     private final double PRECISION = 1e-6;
 
-    private AtmClient atm;
-    private AccountManager manager;
+    private Atm atm;
+    private AccountMapper mapper;
     private Account account;
     private Payment payment;
 
     @Before
-    public void setUp() {
-        atm     = new AtmClient(300);
-        manager = new MockAccountPersist();
-        account = new Account("123456789", "Dummy client", manager);
+    public void setUp() throws IOException {
+        atm     = new Atm(300);
+        mapper  = new AccountMapper(bucket.newFile("testFile.dat"));
+        account = new Account("123456789", "Dummy client", mapper);
         payment = new Payment("12345", "123456789", 60.53);
+        account.setBalance(600);
     }
 
     @Test
     public void testHasEnoughWithdrawalFunds() {
-        atm = new AtmClient(5);
+        atm = new Atm(5);
         assertFalse("can't allow when 5", atm.hasEnoughWithdrawalFunds());
-        atm = new AtmClient(10);
+        atm = new Atm(10);
         assertTrue("must allow when 10", atm.hasEnoughWithdrawalFunds());
     }
 
@@ -74,13 +80,13 @@ public class AtmClientTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void doesNotAllowWithdrawalWhenNotEnoughFunds() {
-        atm = new AtmClient(5);
+        atm = new Atm(5);
         atm.withdraw(10, account);
     }
 
     @Test
     public void allowsWithrawingAllFunds() {
-        atm = new AtmClient(100);
+        atm = new Atm(100);
         atm.withdraw(100, account);
         assertEquals(0, atm.getFunds(), PRECISION);
     }

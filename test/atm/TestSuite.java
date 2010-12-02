@@ -8,9 +8,9 @@ import atm.model.*;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ 
     AcceptanceTests.class,
-    AtmClientTest.class,
+    AtmTest.class,
     TransactionTest.class,
-    AccountPersistTest.class,
+    AccountMapperTest.class,
     AccountTest.class
 })
 public class TestSuite {}

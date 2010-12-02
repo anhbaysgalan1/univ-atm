@@ -10,7 +10,7 @@ import java.util.Scanner;
  * autenticar o utilizador com base no seu pin, e efectuar operações de
  * serviços que pertençam a um multibanco.
  */
-public class AtmClient {
+public class Atm {
 
     /** Ficheiro de dados com as contas de clientes */
     private final String DATA_SOURCE = "clientes.txt";
@@ -25,11 +25,21 @@ public class AtmClient {
     private double funds;
 
     /**
+     * Permite abstracção na localização dos ficheiros de dados
+     *
+     * @param filename  nome do ficheiro de dados
+     * @return          objecto File
+     */
+    public static File getFile(String filename) {
+        return new File("data" + File.separator + filename);
+    }
+
+    /**
      * Construtor
      *
      * @param startingFunds  quantidade disponível no cofre
      */
-    public AtmClient(double startingFunds) {
+    public Atm(double startingFunds) {
         funds = Math.abs(startingFunds);
     }
 
@@ -93,33 +103,59 @@ public class AtmClient {
         funds -= d;
     }
 
-
     /**
-     * 
-     * @param payment
-     * @param account
+     * Pagamento de serviços Água
+     *
+     * @param payment  objecto de um pagamento de serviços
+     * @param account  objecto de conta
      */
     public void payWaterBill(Payment payment, Account account) {
         payBill("Pagamento de serviços Água", payment, account);
 
     }
 
+    /**
+     * Pagamento de serviços Electricidade
+     *
+     * @param payment  objecto de um pagamento de serviços
+     * @param account  objecto de conta
+     */
     public void payElectricityBill(Payment payment, Account account) {
         payBill("Pagamento de serviços Electricidade", payment, account);
 
     }
 
+    /**
+     * Pagamento de serviços Telemóvel
+     *
+     * @param payment  objecto de um pagamento de serviços
+     * @param account  objecto de conta
+     */
     public void payPhoneBill(Payment payment, Account account) {
        payBill("Pagamento de serviços Telemóvel", payment, account);
 
     }
 
+    /**
+     * Pagamento de um serviço
+     *
+     * @param description  descrição a registar nos movimentos de conta
+     * @param payment      objecto do pagamento de serviços
+     * @param account
+     */
     private void payBill(String description, Payment payment, Account account) {
         account.processTransaction(
             Transaction.newDebit(description, payment.getAmmount())
         );
     }
 
+    /**
+     * Retorna a uma entidade para um número de telemóvel em
+     * operadora conhecida.
+     *
+     * @param phone  número de telemóvel
+     * @return       entidade para ser usada num pagamento de serviços
+     */
     public String getPhoneEntity(String phone){
         switch (phone.charAt(1)){
             case '1': return "10158";
@@ -144,7 +180,7 @@ public class AtmClient {
      */
     public Account getAccountWithPin(String pin) {
         Account account = null;
-        File dataFile = Factory.getFile(DATA_SOURCE);
+        File dataFile = getFile(DATA_SOURCE);
         try {
             Scanner fileScanner = new Scanner(dataFile, "UTF8");
             while (fileScanner.hasNextLine() && account == null) {
@@ -178,11 +214,11 @@ public class AtmClient {
             );
         }
         if (tokens[0].equals(pin)) {
-            String numb = tokens[1];
+            String nmbr = tokens[1];
             String name = tokens[2];
             String data = tokens[3];
-            AccountManager manager = new AccountPersist(Factory.getFile(data));
-            account = new Account(numb, name, manager);
+            AccountMapper datamapper = new AccountMapper(getFile(data));
+            account = new Account(nmbr, name, datamapper);
         }
         return account;
     }

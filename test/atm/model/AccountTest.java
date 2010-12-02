@@ -1,23 +1,29 @@
 
 package atm.model;
 
+import java.io.IOException;
+import org.junit.rules.TemporaryFolder;
+import org.junit.Rule;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AccountTest {
 
+    @Rule public TemporaryFolder bucket = new TemporaryFolder();
+
     private final double PRECISION = 1e-6;
     private final String testAccountNum = "0010029289641272009";
     private final String testClientName = "Rui Filipe Tavares Melo";
 
-    private AccountManager manager;
+    private AccountMapper mapper;
     private Account account;
 
     @Before
-    public void setUp() {
-        manager = new MockAccountPersist();
-        account = new Account(testAccountNum, testClientName, manager);
+    public void setUp() throws IOException {
+        mapper  = new AccountMapper(bucket.newFile("testFile.dat"));
+        account = new Account(testAccountNum, testClientName, mapper);
+        account.setBalance(600);
     }
 
     @Test

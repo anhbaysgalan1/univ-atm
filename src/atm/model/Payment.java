@@ -2,30 +2,44 @@
 package atm.model;
 
 /**
- *
+ * Representa um pagamento de serviços
  */
 public class Payment {
-    private String ent;
-    private String ref;
+
+    /** Entidade */
+    private String entity;
+
+    /** Referência */
+    private String reference;
+
+    /** Montante */
     private double ammount;
 
-    public Payment(String ent, String ref, double ammount) {
-        this.ent = ent;
-        this.ref = ref;
-        this.ammount = ammount;
+    /**
+     * Construtor
+     *
+     * @param entity     entidade
+     * @param reference  referência
+     * @param ammount    montante
+     */
+    public Payment(String entity, String reference, double ammount) {
+        this.entity    = entity;
+        this.reference = reference;
+        this.ammount   = ammount;
     }
 
+    /** Retorna a entidade passada ao construtor */
+    public String getEntity() {
+        return entity;
+    }
+
+    /** Retorna a referência passada ao construtor */
+    public String getReference() {
+        return reference;
+    }
+
+    /** Retorna o montante passado ao construtor */
     public double getAmmount() {
         return ammount;
     }
-
-    public String getEnt() {
-        return ent;
-    }
-
-    public String getRef() {
-        return ref;
-    }
-    
-
 }

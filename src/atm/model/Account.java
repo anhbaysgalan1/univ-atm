@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representa uma conta bancária, segundo o ponto de vista
- * de uma caixa multibanco.
+ * Representa uma conta bancária.
  */
 public class Account implements java.io.Serializable {
 
@@ -30,7 +29,7 @@ public class Account implements java.io.Serializable {
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     /** Objecto de persistência, com a fonte de dados (não serializado) */
-    private transient AccountManager manager;
+    private transient AccountMapper mapper;
 
     /**
      * Construtor por defeito.
@@ -38,22 +37,22 @@ public class Account implements java.io.Serializable {
      * Objectos deste tipo apenas devem ser instanciados
      * pelo AtmClient, ou pelos testes.
      *
-     * @see AtmClient.getAccountWithPin(String)
+     * @see Atm.getAccountWithPin(String)
      *
-     * @param number   número de conta
-     * @param client   nome do cliente
-     * @param manager  objecto de persistência, com a fonte dos dados
+     * @param number  número de conta
+     * @param client  nome do cliente
+     * @param mapper  objecto de persistência, com a fonte dos dados
      */
-    Account(String number, String client, AccountManager manager) {
-        this.number  = number;
-        this.client  = client;
-        this.manager = manager;
+    Account(String number, String client, AccountMapper mapper) {
+        this.number = number;
+        this.client = client;
+        this.mapper = mapper;
         load();
     }
 
-    /** Carrega os dados da persistência de dados */
+    /** Carrega os dados da persistência */
     private void load() {
-        manager.load(this);
+        mapper.load(this);
     }
 
     /** Retorna o número de conta passado para o construtor */
@@ -123,7 +122,7 @@ public class Account implements java.io.Serializable {
     /**
      * Processa um movimento, debitando ou creditando da conta o valor
      * movimentado, assim como registando o movimento. Por último,
-     * se tudo tiver corrido bem, a operação é guardada em ficheiro.
+     * se tudo tiver corrido bem, os dados são gravados.
      *
      * @param transaction  objecto de movimento de conta
      */
@@ -138,7 +137,7 @@ public class Account implements java.io.Serializable {
                 break;
         }
         addTransaction(transaction);
-        manager.save(this);
+        mapper.save(this);
     }
 
     /**

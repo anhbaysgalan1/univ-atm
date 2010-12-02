@@ -2,14 +2,14 @@
 package atm;
 
 import java.util.Scanner;
+import atm.model.Atm;
 import atm.model.Account;
-import atm.model.AtmClient;
 import atm.model.Transaction;
 
 public class Main {
 
     private static Scanner input = new Scanner(System.in);
-    private static AtmClient atm = new AtmClient(500);
+    private static Atm atm = new Atm(500);
 
     public static void main(String[] args) {
         try {

@@ -20,7 +20,7 @@ import java.io.ObjectOutputStream;
  * uma base de dados ou chamadas pela rede (RPC), como faz um
  * multibanco verdadeiro. As alterações são só precisas aqui.
  */
-class AccountPersist implements AccountManager {
+class AccountMapper {
 
     /** Ficheiro onde estão armazenados os dados */
     private File data;
@@ -29,11 +29,11 @@ class AccountPersist implements AccountManager {
      * Constructor.
      * Não deve ser conhecido fora da camada do modelo.
      *
-     * @see AtmClient
+     * @see Atm.parseValidAccount(String, String)
      *
      * @param data  ficheiro onde estão armazenados os dados
      */
-    AccountPersist(File data) {
+    AccountMapper(File data) {
         this.data = data;
         if (!data.exists()) {
             createDataFile();
@@ -56,7 +56,6 @@ class AccountPersist implements AccountManager {
      *
      * @param account  objecto do tipo Account para guardar
      */
-    @Override
     public void save(Account account) {
         ObjectOutputStream out = null;
         try {
@@ -73,7 +72,6 @@ class AccountPersist implements AccountManager {
      *
      * @param account  objecto do tipo Account para onde carregar os dados
      */
-    @Override
     public void load(Account account) {
         Account restored = restore();
         if (restored != null) {

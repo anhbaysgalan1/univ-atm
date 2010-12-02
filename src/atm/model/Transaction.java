@@ -106,8 +106,6 @@ public class Transaction implements java.io.Serializable {
      * Verifica se um objecto é igual a este.
      * Utilizado nos testes, com assertEquals().
      *
-     * @see TransactionTest
-     *
      * @param obj  a referência do objecto para comparar
      * @return     true se este objecto é igual ao argumento obj;
      *             false caso contrário

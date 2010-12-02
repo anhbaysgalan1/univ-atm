@@ -8,12 +8,12 @@ import static org.junit.Assert.*;
 
 public class AcceptanceTests {
 
-    private AtmClient atm;
+    private Atm atm;
     private Account account;
 
     @Before
     public void setUp() {
-        atm = new AtmClient(1000);
+        atm = new Atm(1000);
     }
 
     @Test
