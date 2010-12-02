@@ -12,19 +12,14 @@ public class AtmClientTest {
     private AtmClient atm;
     private AccountManager manager;
     private Account account;
-
-    private void assertEqualTransactions(
-                Transaction expected, Transaction actual) {
-        assertTrue(actual.getDescription().equals(expected.getDescription()));
-        assertEquals(expected.getAmmount(), actual.getAmmount(), 1e-6);
-        assertEquals(expected.getType(), actual.getType());
-    }
+    private Payment payment;
 
     @Before
     public void setUp() {
         atm     = new AtmClient(300);
         manager = new MockAccountPersist();
         account = new Account("123456789", "Dummy client", manager);
+        payment = new Payment("12345", "123456789", 60.53);
     }
 
     @Test
@@ -45,7 +40,9 @@ public class AtmClientTest {
     public void depositIsRegistered() {
         atm.deposit(300, account);
         Transaction expected = Transaction.newCredit("Depósito MB", 300);
-        assertEqualTransactions(expected, account.getLastTransaction());
+        assertTrue(TransactionTest.equalTransactions(
+                expected, account.getLastTransaction()
+        ));
     }
 
     @Test
@@ -92,6 +89,59 @@ public class AtmClientTest {
     public void withdrawalIsRegistered() {
         atm.withdraw(200, account);
         Transaction expected = Transaction.newDebit("Levantamento MB", 200);
-        assertEqualTransactions(expected, account.getLastTransaction());
+        assertTrue(TransactionTest.equalTransactions(
+                expected, account.getLastTransaction()
+        ));
+    }
+
+    @Test
+    public void canPayWaterBill() {
+        Transaction expected =
+                Transaction.newDebit("Pagamento de serviços Água", 60.53);
+
+        atm.payWaterBill(payment, account);
+
+        assertEquals(expected, account.getLastTransaction());
+        assertEquals(439.47, account.getBalance(), 1e-6);
+    }
+
+    @Test
+    void canPayElectricityBill() {
+        Transaction expected =
+            Transaction.newDebit("Pagamento de serviços Electricidade", 60.53);
+
+        atm.payElectricityBill(payment, account);
+
+        assertEquals(expected, account.getLastTransaction());
+        assertEquals(439.47, account.getBalance(), 1e-6);
+    }
+
+    @Test
+    public void canPayPhoneBill() {
+        Transaction expected =
+                Transaction.newDebit("Pagamento de serviços Telemóvel", 60.53);
+
+        atm.payPhoneBill(payment, account);
+
+        assertEquals(expected, account.getLastTransaction());
+        assertEquals(439.47, account.getBalance(), 1e-6);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantPayWaterBillForLackOfFunds() {
+        account.setBalance(50);
+        atm.payWaterBill(payment, account);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantPayElectricityBillForLackOfFunds() {
+        account.setBalance(50);
+        atm.payElectricityBill(payment, account);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantPayPhoneBillForLackOfFunds() {
+        account.setBalance(50);
+        atm.payPhoneBill(payment, account);
     }
 }
