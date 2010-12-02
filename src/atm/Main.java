@@ -60,7 +60,6 @@ public class Main {
                 printStatusMessage(
                     "Saldo Actual: " + formatCurrency(account.getBalance())
                 );
-                pause();
                 break;
 
             case 3:
@@ -68,7 +67,6 @@ public class Main {
                 for (Transaction latest : account.getLatestTransactions(10)) {
                     System.out.println(latest);
                 }
-                pause();
                 break;
 
             case 4:
@@ -122,7 +120,6 @@ public class Main {
         }
         
         printNewLine();
-        userMenu(account);
     }
 
     /** Levantamento de outras importâncias
