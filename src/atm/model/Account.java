@@ -40,9 +40,9 @@ public class Account implements java.io.Serializable {
      *
      * @see AtmClient.getAccountWithPin(String)
      *
-     * @param number  número de conta
-     * @param client  nome do cliente
-     * @param data    objecto de persistência, com a fonte dos dados
+     * @param number   número de conta
+     * @param client   nome do cliente
+     * @param manager  objecto de persistência, com a fonte dos dados
      */
     Account(String number, String client, AccountManager manager) {
         this.number  = number;
