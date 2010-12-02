@@ -144,4 +144,11 @@ public class AtmClientTest {
         account.setBalance(50);
         atm.payPhoneBill(payment, account);
     }
+
+    @Test
+    public void canGetCorrectPhoneEntities() {
+        assertEquals("10158", atm.getPhoneEntity("918135235"));
+        assertEquals("20638", atm.getPhoneEntity("932352352"));
+        assertEquals("10559", atm.getPhoneEntity("965234235"));
+    }
 }
