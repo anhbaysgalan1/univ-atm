@@ -151,4 +151,9 @@ public class AtmClientTest {
         assertEquals("20638", atm.getPhoneEntity("932352352"));
         assertEquals("10559", atm.getPhoneEntity("965234235"));
     }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void cantGetEntityFromUnknownPhoneNetwork() {
+        atm.getPhoneEntity("123456789");
+    }
 }
