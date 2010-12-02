@@ -93,6 +93,45 @@ public class AtmClient {
         funds -= d;
     }
 
+
+    /**
+     * 
+     * @param payment
+     * @param account
+     */
+    public void payWaterBill(Payment payment, Account account) {
+        payBill("Pagamento de serviços Água", payment, account);
+
+    }
+
+    public void payElectricityBill(Payment payment, Account account) {
+        payBill("Pagamento de serviços Electricidade", payment, account);
+
+    }
+
+    public void payPhoneBill(Payment payment, Account account) {
+       payBill("Pagamento de serviços Telemóvel", payment, account);
+
+    }
+
+    private void payBill(String description, Payment payment, Account account) {
+        account.processTransaction(
+            Transaction.newDebit(description, payment.getAmmount())
+        );
+    }
+
+    public String getPhoneEntity(String phone){
+        switch (phone.charAt(1)){
+            case '1': return "10158";
+            case '3': return "20638";
+            case '6': return "10559";
+            default:
+                throw new IllegalArgumentException(
+                    "Número inválido ou Operadora desconhecida!"
+                 );
+        }
+    }
+    
     /**
      * Efectua o "login", procurando uma conta com base no seu pin,
      * e partindo do princípio que o ficheiro de clientes está bem
