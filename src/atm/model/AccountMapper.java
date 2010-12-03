@@ -37,18 +37,13 @@ class AccountMapper {
     AccountMapper(File data) {
         this.data = data;
         if (!data.exists()) {
-            createDataFile();
-        }
-    }
-
-    /** Tenta criar ficheiro, apontado pelo File passado para o construtor */
-    private void createDataFile() {
-        try {
-            data.createNewFile();
-        } catch (IOException e) {
-            throw new RuntimeException(
-                "Não foi possível criar novo ficheiro de dados."
-            );
+            try {
+                data.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(
+                    "Não foi possível criar novo ficheiro de dados."
+                );
+            }
         }
     }
 
