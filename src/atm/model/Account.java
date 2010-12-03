@@ -28,7 +28,7 @@ public class Account {
      * Construtor por defeito.
      *
      * Objectos deste tipo apenas devem ser instanciados
-     * pelo AtmClient, ou pelos testes.
+     * pelo Atm, ou pelos testes.
      *
      * @see Atm.getAccountWithPin(String)
      *
