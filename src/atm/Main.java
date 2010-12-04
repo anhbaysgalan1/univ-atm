@@ -4,6 +4,7 @@ package atm;
 import java.util.Scanner;
 import atm.model.Atm;
 import atm.model.Account;
+import atm.model.Payment;
 import atm.model.Transaction;
 
 public class Main {
@@ -157,7 +158,17 @@ public class Main {
         try {
         switch (getOption()){
             case 1:
-                System.out.println("Em desenvolvimento");
+                askInput("Nº Entidade: ");
+                String entity = input.nextLine();
+                askInput("Nº Referencia: ");
+                String reference = input.nextLine();
+                askInput("Nº Montante: ");
+                double ammount = input.nextDouble();
+                clearInput();
+                Payment payment = new Payment(entity, reference, ammount);
+                atm.payElectricityBill(payment, account);
+                printNewLine();
+                printStatusMessage("Pagamento efectuado com sucesso");
                 pause();
                 break;
             case 2:
