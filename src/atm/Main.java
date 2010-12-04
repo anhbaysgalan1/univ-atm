@@ -186,7 +186,18 @@ public class Main {
                 pause();
                 break;
             case 3:
-                
+                askInput("Nº Telemóvel: ");
+                String telemovel = input.nextLine();
+                atm.getPhoneEntity(telemovel);
+                askInput("Nº Referencia: ");
+                String reference3 = input.nextLine();
+                askInput("Nº Montante: ");
+                double ammount3 = input.nextDouble();
+                clearInput();
+                Payment payment3 = new Payment(telemovel, reference3, ammount3);
+                 atm.payWaterBill(payment3, account);
+                printNewLine();
+                printStatusMessage("Pagamento efectuado com sucesso");
                 break;
             default:
                 printErrorMessage("Opção inválida");
