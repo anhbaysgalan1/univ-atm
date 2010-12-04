@@ -172,12 +172,21 @@ public class Main {
                 pause();
                 break;
             case 2:
-                System.out.println("Em desenvolvimento");
+                askInput("Nº Entidade: ");
+                String entity2 = input.nextLine();
+                askInput("Nº Referencia: ");
+                String reference2 = input.nextLine();
+                askInput("Nº Montante: ");
+                double ammount2 = input.nextDouble();
+                clearInput();
+                Payment payment2 = new Payment(entity2, reference2, ammount2);
+                atm.payWaterBill(payment2, account);
+                printNewLine();
+                printStatusMessage("Pagamento efectuado com sucesso");
                 pause();
                 break;
             case 3:
-                System.out.println("Em desenvolvimento");
-                pause();
+                
                 break;
             default:
                 printErrorMessage("Opção inválida");
@@ -189,9 +198,6 @@ public class Main {
         printNewLine();
         
     }
-
-
-    
 
     // Helper methods
     private static void printHeader(String header) {
