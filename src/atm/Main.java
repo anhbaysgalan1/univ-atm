@@ -72,8 +72,6 @@ public class Main {
                 break;
 
             case 4:
-                printStatusMessage("Serviço em desenvolvimento, poderá visualizar erros...");
-                pause();
                 servicesPayment(account);
                 break;
 
@@ -82,7 +80,6 @@ public class Main {
                 askInput("Montante: ");
                 int dep = input.nextInt();
                 clearInput();
-
                 atm.deposit(dep, account);
                 printStatusMessage("Obrigado pelo seu depósito.");
                 break;
@@ -158,6 +155,7 @@ public class Main {
         try {
         switch (getOption()){
             case 1:
+                try{
                 askInput("Nº Entidade: ");
                 String entity = input.nextLine();
                 askInput("Nº Referencia: ");
@@ -170,8 +168,12 @@ public class Main {
                 printNewLine();
                 printStatusMessage("Pagamento efectuado com sucesso");
                 pause();
+                }catch (IllegalArgumentException e){
+                     printErrorMessage(e.getMessage());
+                }
                 break;
             case 2:
+                try{
                 askInput("Nº Entidade: ");
                 String entity2 = input.nextLine();
                 askInput("Nº Referencia: ");
@@ -184,20 +186,21 @@ public class Main {
                 printNewLine();
                 printStatusMessage("Pagamento efectuado com sucesso");
                 pause();
+                }catch (IllegalArgumentException e){
+                    printErrorMessage(e.getMessage());
+                }
                 break;
             case 3:
+                try{
                 askInput("Nº Telemóvel: ");
-                String telemovel = input.nextLine();
-                atm.getPhoneEntity(telemovel);
-                askInput("Nº Referencia: ");
-                String reference3 = input.nextLine();
-                askInput("Nº Montante: ");
-                double ammount3 = input.nextDouble();
-                clearInput();
-                Payment payment3 = new Payment(telemovel, reference3, ammount3);
-                 atm.payWaterBill(payment3, account);
+                String phone = input.nextLine();
+                Payment payment3 = new Payment(atm.getPhoneEntity(phone), phone, menuLoading());
+                atm.payPhoneBill(payment3, account);
                 printNewLine();
                 printStatusMessage("Pagamento efectuado com sucesso");
+                }catch (IllegalArgumentException e){
+                    printErrorMessage(e.getMessage());
+                }
                 break;
             default:
                 printErrorMessage("Opção inválida");
@@ -209,6 +212,27 @@ public class Main {
         printNewLine();
         
     }
+
+    public static double menuLoading(){
+        printHeader("Montante");
+
+        System.out.println("1. 5 €");
+        System.out.println("2. 10 €");
+        System.out.println("3. 20 €");
+
+        askInput("\n> ");
+        
+        double ammount = 0;
+        switch (getOption()) {
+                case 1: { ammount=5;  }break;
+                case 2: { ammount=15;  }break;
+                case 3: { ammount=20;  }break;
+            default:  printErrorMessage("Opção inválida");
+        }
+        return menuLoading();
+
+    }
+
 
     // Helper methods
     private static void printHeader(String header) {
