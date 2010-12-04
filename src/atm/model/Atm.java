@@ -157,16 +157,45 @@ public class Atm {
      * @return       entidade para ser usada num pagamento de serviços
      */
     public String getPhoneEntity(String phone){
-        switch (phone.charAt(1)){
-            case '1': return "10158";  // vodafone
-            case '3': return "20638";  // optimus
-            case '6': return "10559";  // tmn
-            default:
+        try{
+            Integer.parseInt(phone);
+        }catch (NumberFormatException e){
+            throw new IllegalArgumentException("Caracteres inválidos");
+            }
+
+        if(phone.length()<9)
                 throw new IllegalArgumentException(
-                    "Número inválido ou Operadora desconhecida!"
-                 );
-        }
+                    "Número inválido - Caracteres em falta"
+                    );
+
+
+        if(phone.length()>9)
+                throw new IllegalArgumentException(
+                    "Número inválido - Caracteres em excesso"
+                    );
+        
+        switch (phone.charAt(1)){
+                case '1': return "10158";  // vodafone
+                case '3': return "20638";  // optimus
+                case '6': return "10559";  // tmn
+                default:
+                    throw new IllegalArgumentException(
+                        "Número inválido ou Operadora desconhecida!"
+                     );
+            }
+
+
+
+
+
+
+
     }
+
+    
+
+        
+    
     
     /**
      * Efectua o "login", procurando uma conta com base no seu pin,
