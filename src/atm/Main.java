@@ -48,6 +48,7 @@ public class Main {
         System.out.println("3. Consulta de movimentos de conta");
         System.out.println("4. Pagamentos de serviços");
         System.out.println("5. Depósitos");
+        System.out.println("6. Abortar");
 
         askInput("\n> ");
 
@@ -83,6 +84,9 @@ public class Main {
 
                 atm.deposit(dep, account);
                 printStatusMessage("Obrigado pelo seu depósito.");
+                break;
+
+            case 6:
                 break;
 
             default:
