@@ -156,14 +156,7 @@ public class Main {
         switch (getOption()){
             case 1:
                 try{
-                askInput("Nº Entidade: ");
-                String entity = input.nextLine();
-                askInput("Nº Referencia: ");
-                String reference = input.nextLine();
-                askInput("Nº Montante: ");
-                double ammount = input.nextDouble();
-                clearInput();
-                Payment payment = new Payment(entity, reference, ammount);
+                Payment payment = payService();
                 atm.payElectricityBill(payment, account);
                 printNewLine();
                 printStatusMessage("Pagamento efectuado com sucesso");
@@ -174,14 +167,7 @@ public class Main {
                 break;
             case 2:
                 try{
-                askInput("Nº Entidade: ");
-                String entity2 = input.nextLine();
-                askInput("Nº Referencia: ");
-                String reference2 = input.nextLine();
-                askInput("Nº Montante: ");
-                double ammount2 = input.nextDouble();
-                clearInput();
-                Payment payment2 = new Payment(entity2, reference2, ammount2);
+                Payment payment2 = payService();
                 atm.payWaterBill(payment2, account);
                 printNewLine();
                 printStatusMessage("Pagamento efectuado com sucesso");
@@ -194,7 +180,7 @@ public class Main {
                 try{
                 askInput("Nº Telemóvel: ");
                 String phone = input.nextLine();
-                Payment payment3 = new Payment(atm.getPhoneEntity(phone), phone, menuLoading());
+                Payment payment3 = new Payment(atm.getPhoneEntity(phone), phone, getPhonePaymentAmmount());
                 atm.payPhoneBill(payment3, account);
                 printNewLine();
                 printStatusMessage("Pagamento efectuado com sucesso");
@@ -213,7 +199,18 @@ public class Main {
         
     }
 
-    public static double menuLoading(){
+    public static Payment payService(){
+        askInput("Nº Entidade: ");
+        String entity = input.nextLine();
+        askInput("Nº Referencia: ");
+        String reference = input.nextLine();
+        askInput("Nº Montante: ");
+        double ammount = input.nextDouble();
+        clearInput();
+        return new Payment(entity, reference, ammount);
+    }
+
+    public static double getPhonePaymentAmmount(){
         printHeader("Montante");
 
         System.out.println("1. 5 €");
@@ -228,9 +225,9 @@ public class Main {
                 case 2: { ammount=15;  }break;
                 case 3: { ammount=20;  }break;
             default:  printErrorMessage("Opção inválida");
+            return getPhonePaymentAmmount();
         }
-        return menuLoading();
-
+        return ammount;
     }
 
 
