@@ -163,15 +163,9 @@ public class Atm {
             throw new IllegalArgumentException("Caracteres inválidos");
             }
 
-        if(phone.length()<9)
+        if(phone.length()!=9)
                 throw new IllegalArgumentException(
-                    "Número inválido - Caracteres em falta"
-                    );
-
-
-        if(phone.length()>9)
-                throw new IllegalArgumentException(
-                    "Número inválido - Caracteres em excesso"
+                    "Número inválido"
                     );
         
         switch (phone.charAt(1)){
@@ -183,12 +177,6 @@ public class Atm {
                         "Número inválido ou Operadora desconhecida!"
                      );
             }
-
-
-
-
-
-
 
     }
 
