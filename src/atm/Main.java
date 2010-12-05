@@ -47,7 +47,7 @@ public class Main {
         System.out.println("1. Levantamentos");
         System.out.println("2. Consulta de saldo de conta");
         System.out.println("3. Consulta de movimentos de conta");
-        System.out.println("4. Pagamentos de serviços");
+        System.out.println("4. Pagamento de serviços");
         System.out.println("5. Depósitos");
         System.out.println("6. Abortar");
 
@@ -124,9 +124,7 @@ public class Main {
         printNewLine();
     }
 
-    /** Levantamento de outras importâncias
-     *
-     */
+    /** Levantamento de outras importâncias */
     public static void withdrawOther(Account account) {
         try{
             askInput("Montante: ");
@@ -139,95 +137,77 @@ public class Main {
             withdrawOther(account);
         }
     }
-/**Pagamento de serviços
- * Conta de electricidade
- * Conta da agua
- * Carregamento de telemovel
- */
+
+    /** Menu do pagamento de serviços */
     public static void servicesPayment(Account account) {
-        printHeader("Pagamentos de Serviços");
+        printHeader("Pagamento de Serviços");
         System.out.println("1. Conta de Electricidade");
         System.out.println("2. Conta da Água");
         System.out.println("3. Carregamento Telemóvel");
 
         askInput("\n> ");
-
-        try {
         switch (getOption()){
-            case 1:
-                try{
-                Payment payment = payService();
-                atm.payElectricityBill(payment, account);
-                printNewLine();
-                printStatusMessage("Pagamento efectuado com sucesso");
-                pause();
-                }catch (IllegalArgumentException e){
-                     printErrorMessage(e.getMessage());
-                }
-                break;
-            case 2:
-                try{
-                Payment payment2 = payService();
-                atm.payWaterBill(payment2, account);
-                printNewLine();
-                printStatusMessage("Pagamento efectuado com sucesso");
-                pause();
-                }catch (IllegalArgumentException e){
-                    printErrorMessage(e.getMessage());
-                }
-                break;
-            case 3:
-                try{
-                askInput("Nº Telemóvel: ");
-                String phone = input.nextLine();
-                Payment payment3 = new Payment(atm.getPhoneEntity(phone), phone, getPhonePaymentAmmount());
-                atm.payPhoneBill(payment3, account);
-                printNewLine();
-                printStatusMessage("Pagamento efectuado com sucesso");
-                }catch (IllegalArgumentException e){
-                    printErrorMessage(e.getMessage());
-                }
-                break;
+            case 1: atm.payElectricityBill(getPayment(), account); break;
+            case 2: atm.payWaterBill(getPayment(), account);       break;
+            case 3: atm.payPhoneBill(getPhonePayment(), account);  break;
             default:
                 printErrorMessage("Opção inválida");
-
-             }
-         }catch(IllegalArgumentException e){
-          printErrorMessage(e.getMessage());
+                servicesPayment(account);
         }
+
+        printStatusMessage("Pagamento efectuado com sucesso");
         printNewLine();
-        
     }
 
-    public static Payment payService(){
-        askInput("Nº Entidade: ");
-        String entity = input.nextLine();
-        askInput("Nº Referencia: ");
-        String reference = input.nextLine();
-        askInput("Nº Montante: ");
-        double ammount = input.nextDouble();
-        clearInput();
-        return new Payment(entity, reference, ammount);
+    /** Retorna um objecto de pagamento de serviço */
+    public static Payment getPayment() {
+        try {
+            askInput("Entidade: ");
+            String entity = input.nextLine();
+            askInput("Referência: ");
+            String reference = input.nextLine();
+            askInput("Montante: ");
+            double ammount = input.nextDouble();
+            clearInput();
+            printNewLine();
+            return new Payment(entity, reference, ammount);
+        } catch (IllegalArgumentException e) {
+            printErrorMessage(e.getMessage());
+            return getPayment();
+        }
     }
 
-    public static double getPhonePaymentAmmount(){
+    /** Retorna um objecto de pagamento de serviço, para um telemóvel */
+    public static Payment getPhonePayment() {
+        try {
+            askInput("Telemóvel: ");
+            String phone = input.nextLine();
+            String entity = atm.getPhoneEntity(phone);
+            double amount = getPhonePaymentAmount();
+            printNewLine();
+            return new Payment(entity, phone, amount);
+        } catch (IllegalArgumentException e) {
+            printErrorMessage(e.getMessage());
+            return getPhonePayment();
+        }
+    }
+
+    /** Menu com quantias de carregamento do telemóvel */
+    public static double getPhonePaymentAmount(){
         printHeader("Montante");
-
-        System.out.println("1. 5 €");
-        System.out.println("2. 10 €");
-        System.out.println("3. 20 €");
+        System.out.println("1. 5 euros");
+        System.out.println("2. 10 euros");
+        System.out.println("3. 20 euros");
 
         askInput("\n> ");
-        
-        double ammount = 0;
         switch (getOption()) {
-                case 1: { ammount=5;  }break;
-                case 2: { ammount=15;  }break;
-                case 3: { ammount=20;  }break;
-            default:  printErrorMessage("Opção inválida");
-            return getPhonePaymentAmmount();
+            case 1: return 5;
+            case 2: return 15;
+            case 3: return 20;
+            default:
+                printErrorMessage("Opção inválida");
+                return getPhonePaymentAmount();
         }
-        return ammount;
     }
 
 

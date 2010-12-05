@@ -13,26 +13,39 @@ public class Payment {
     private String reference;
 
     /** Montante */
-    private double ammount;
-    /** Referencia */
-    private final int refSize=9;
-    /** Entidade */
-    private final int entSize=5;
+    private double amount;
+
+    /** Valida se uma entidade tem 5 dígitos */
+    public static boolean isValidEntity(String entity) {
+        return validate(entity, 5);
+    }
+
+    /** Valida se uma referência tem 9 dígitos */
+    public static boolean isValidReference(String reference) {
+        return validate(reference, 9);
+    }
+
     /**
      * Construtor
      *
      * @param entity     entidade
      * @param reference  referência
-     * @param ammount    montante
+     * @param amount     montante
      */
-    public Payment(String entity, String reference, double ammount) {
-
-        verifyService(entity,entSize);
-        verifyService(reference,refSize);
-
+    public Payment(String entity, String reference, double amount) {
+        StringBuilder error = new StringBuilder();
+        if (!isValidEntity(entity)) {
+            error.append("Entidade inválida. ");
+        }
+        if (!isValidReference(reference)) {
+            error.append("Referência inválida.");
+        }
+        if (error.length() != 0) {
+            throw new IllegalArgumentException(error.toString());
+        }
         this.entity    = entity;
         this.reference = reference;
-        this.ammount   = Math.abs(ammount);
+        this.amount    = Math.abs(amount);
     }
 
     /** Retorna a entidade passada ao construtor */
@@ -46,24 +59,20 @@ public class Payment {
     }
 
     /** Retorna o montante passado ao construtor */
-    public double getAmmount() {
-        return ammount;
+    public double getAmount() {
+        return amount;
     }
 
-    public void verifyService(String numberService, int value){
-        //Testa a referencia/entidade caso acho caracteres invalidos
-        try{
-            Integer.parseInt(numberService);
-        }catch (NumberFormatException e){
-            throw new IllegalArgumentException("Não é um número");
-            }
-
-        //Verifica se a referencia/entidade introduzida é inferior ou superior a 9 digitos
-        if(numberService.length()<value || numberService.length()>value)
-                throw new IllegalArgumentException(
-                    "Referencia inválida"
-                    );
-
-        
+    /**
+     * Valida se uma string é um número com size dígitos
+     *
+     * @param numeric  número a validar
+     * @param size     número de dígitos para verificar
+     * @return         true se numeric tiver size dígitos;
+     *                 false caso contrário
+     */
+    private static boolean validate(String numeric, int size) {
+        java.util.Scanner sc = new java.util.Scanner(numeric);
+        return sc.hasNextInt() && numeric.length() == size;
     }
 }

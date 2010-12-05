@@ -145,7 +145,7 @@ public class Atm {
      */
     private void payBill(String description, Payment payment, Account account) {
         account.processTransaction(
-            Transaction.newDebit(description, payment.getAmmount())
+            Transaction.newDebit(description, payment.getAmount())
         );
     }
 
@@ -156,35 +156,19 @@ public class Atm {
      * @param phone  número de telemóvel
      * @return       entidade para ser usada num pagamento de serviços
      */
-    public String getPhoneEntity(String phone){
-        try{
-            Integer.parseInt(phone);
-        }catch (NumberFormatException e){
-            throw new IllegalArgumentException("Caracteres inválidos");
-            }
-
-        if(phone.length()!=9)
-                throw new IllegalArgumentException(
-                    "Número inválido"
-                    );
-        
-        switch (phone.charAt(1)){
+    public String getPhoneEntity(String phone) {
+        if (Payment.isValidReference(phone)) {
+            switch (phone.charAt(1)){
                 case '1': return "10158";  // vodafone
                 case '3': return "20638";  // optimus
                 case '6': return "10559";  // tmn
-                default:
-                    throw new IllegalArgumentException(
-                        "Número inválido ou Operadora desconhecida!"
-                     );
             }
-
+        }
+        throw new IllegalArgumentException(
+            "Número inválido ou operadora desconhecida."
+        );
     }
 
-    
-
-        
-    
-    
     /**
      * Efectua o "login", procurando uma conta com base no seu pin,
      * e partindo do princípio que o ficheiro de clientes está bem
