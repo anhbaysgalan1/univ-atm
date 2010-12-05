@@ -53,47 +53,51 @@ public class Main {
 
         askInput("\n> ");
 
-        switch (getOption()) {
-            case 1:
-                withdrawMenu(account);
-                break;
+        try {
+            switch (getOption()) {
+                case 1:
+                    withdrawMenu(account);
+                    break;
 
-            case 2:
-                printHeader("Saldo de conta");
-                printStatusMessage(
-                    "Conta número: " + account.getNumber() + "\n" +
-                    "Saldo Actual: " + formatCurrency(account.getBalance())
-                );
-                break;
+                case 2:
+                    printHeader("Saldo de conta");
+                    printStatusMessage(
+                        "Conta número: " + account.getNumber() + "\n" +
+                        "Saldo Actual: " + formatCurrency(account.getBalance())
+                    );
+                    break;
 
-            case 3:
-                printHeader("Movimentos de conta");
-                printStatusMessage(
-                    "Saldo Actual: " + formatCurrency(account.getBalance())
-                );
-                for (Transaction latest : account.getLatestTransactions(10)) {
-                    System.out.println(latest);
-                }
-                break;
+                case 3:
+                    printHeader("Movimentos de conta");
+                    printStatusMessage(
+                        "Saldo Actual: " + formatCurrency(account.getBalance())
+                    );
+                    for (Transaction latest : account.getLatestTransactions(10)) {
+                        System.out.println(latest);
+                    }
+                    break;
 
-            case 4:
-                servicesPayment(account);
-                break;
+                case 4:
+                    servicesPayment(account);
+                    break;
 
-            case 5:
-                printHeader("Depósito");
-                askInput("Montante: ");
-                int dep = input.nextInt();
-                clearInput();
-                atm.deposit(dep, account);
-                printStatusMessage("Obrigado pelo seu depósito.");
-                break;
+                case 5:
+                    printHeader("Depósito");
+                    askInput("Montante: ");
+                    int dep = input.nextInt();
+                    clearInput();
+                    atm.deposit(dep, account);
+                    printStatusMessage("Obrigado pelo seu depósito.");
+                    break;
 
-            case 6:
-                break;
+                case 6:
+                    break;
 
-            default:
-                printErrorMessage("Opção inválida");
+                default:
+                    printErrorMessage("Opção inválida");
+            }
+        } catch (IllegalArgumentException e) {
+            printErrorMessage(e.getMessage());
         }
 
         printNewLine();
