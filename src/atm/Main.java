@@ -59,13 +59,18 @@ public class Main {
                 break;
 
             case 2:
+                printHeader("Saldo de conta");
                 printStatusMessage(
+                    "Conta número: " + account.getNumber() + "\n" +
                     "Saldo Actual: " + formatCurrency(account.getBalance())
                 );
                 break;
 
             case 3:
                 printHeader("Movimentos de conta");
+                printStatusMessage(
+                    "Saldo Actual: " + formatCurrency(account.getBalance())
+                );
                 for (Transaction latest : account.getLatestTransactions(10)) {
                     System.out.println(latest);
                 }
@@ -98,7 +103,7 @@ public class Main {
     /** Menu dos levantamentos */
     public static void withdrawMenu(Account account) {
 
-        printHeader("Levantamentos");
+        printHeader("Levantamento");
 
         System.out.println("1. 20       2. 50");
         System.out.println("3. 100      4. 150");
@@ -213,7 +218,7 @@ public class Main {
 
     // Helper methods
     private static void printHeader(String header) {
-        System.out.println("\n\n--- "+header.toUpperCase()+" ---");
+        System.out.println("\n\n| "+header+" |\n");
     }
 
     public static void pause() {
@@ -243,7 +248,7 @@ public class Main {
     }
 
     private static String formatCurrency(double ammount) {
-        return String.format("%.2f", ammount);
+        return String.format("%.2f euros", ammount);
     }
 
     private static short getOption() {
