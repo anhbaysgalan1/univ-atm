@@ -137,9 +137,9 @@ public class Main {
     public static void withdrawOther(Account account) {
         try{
             askInput("Montante: ");
-            int ammount = input.nextInt();
+            int amount = input.nextInt();
             clearInput();
-            atm.withdraw(ammount, account);
+            atm.withdraw(amount, account);
 
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
@@ -176,10 +176,10 @@ public class Main {
             askInput("Referência: ");
             String reference = input.nextLine();
             askInput("Montante: ");
-            double ammount = input.nextDouble();
+            double amount = input.nextDouble();
             clearInput();
             printNewLine();
-            return new Payment(entity, reference, ammount);
+            return new Payment(entity, reference, amount);
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
             return getPayment();
@@ -251,8 +251,8 @@ public class Main {
         System.out.println();
     }
 
-    private static String formatCurrency(double ammount) {
-        return String.format("%.2f euros", ammount);
+    private static String formatCurrency(double amount) {
+        return String.format("%.2f euros", amount);
     }
 
     private static short getOption() {

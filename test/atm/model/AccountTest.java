@@ -39,7 +39,7 @@ public class AccountTest {
     }
 
     @Test
-    public void negativeValuesCreditAPositiveAmmount() {
+    public void negativeValuesCreditAPositiveAmount() {
         account.setBalance(100.0);
         account.credit(-50.0);
         assertEquals(150.0, account.getBalance(), PRECISION);
@@ -53,7 +53,7 @@ public class AccountTest {
     }
 
     @Test
-    public void negativeValuesDebitAPositiveAmmount() {
+    public void negativeValuesDebitAPositiveAmount() {
         account.setBalance(100.0);
         account.debit(-50.0);
         assertEquals(50.0, account.getBalance(), PRECISION);

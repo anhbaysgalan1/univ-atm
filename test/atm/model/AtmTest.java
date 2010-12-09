@@ -58,7 +58,7 @@ public class AtmTest {
     }
 
     @Test
-    public void negativeValuesWithdrawAPositiveAmmount() {
+    public void negativeValuesWithdrawAPositiveAmount() {
         atm.withdraw(-50, account);
         assertEquals(250, atm.getFunds(), PRECISION);
     }

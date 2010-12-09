@@ -37,7 +37,7 @@ public class PaymentTest {
     }
 
     @Test
-    public void paymentWithNegativeAmmountShouldBeSetToPositive() {
+    public void paymentWithNegativeAmountShouldBeSetToPositive() {
         Payment payment = new Payment("12345", "123456789", -20);
         assertEquals(20.0, payment.getAmount(), 1e-6);
     }

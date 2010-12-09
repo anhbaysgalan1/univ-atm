@@ -120,13 +120,13 @@ public class Account {
      * @param transaction  objecto de movimento de conta
      */
     public void processTransaction(Transaction transaction) {
-        double ammount = transaction.getAmmount();
+        double amount = transaction.getAmount();
         switch (transaction.getType()) {
             case CREDIT:
-                credit(ammount);
+                credit(amount);
                 break;
             case DEBIT:
-                debit(ammount);
+                debit(amount);
                 break;
         }
         addTransaction(transaction);

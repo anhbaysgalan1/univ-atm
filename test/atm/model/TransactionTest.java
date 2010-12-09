@@ -16,7 +16,7 @@ public class TransactionTest {
     public static boolean equalTransactions(
                         Transaction expected, Transaction actual) {
         return actual.getDescription().equals(expected.getDescription())
-            && (Double.compare(expected.getAmmount(), actual.getAmmount()) == 0)
+            && (Double.compare(expected.getAmount(), actual.getAmount()) == 0)
             && (expected.getType() == actual.getType());
     }
 
