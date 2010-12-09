@@ -33,7 +33,7 @@ public class Transaction implements java.io.Serializable {
     private Type type;
 
     /** Saldo */
-    private Double value;
+    private Double amount;
 
     /**
      * Construtor.
@@ -44,24 +44,24 @@ public class Transaction implements java.io.Serializable {
      * @param date         data do movimento
      * @param description  descrição do movimento
      * @param type         tipo do movimento
-     * @param value        valor movimentado
+     * @param amount       valor movimentado
      */
-    Transaction(Date date, String description, Type type, double value) {
-        this.date = (Date) date.clone();
+    Transaction(Date date, String description, Type type, double amount) {
+        this.date        = (Date) date.clone();
         this.description = description;
-        this.type = type;
-        this.value = new Double(value);
+        this.type        = type;
+        this.amount      = new Double(amount);
     }
 
     /**
      * Cria um movimento de crédito
      *
      * @param description  descrição do movimento
-     * @param value        valor movimentado
+     * @param amount       valor movimentado
      * @return             novo objecto de movimento Transaction
      */
-    public static Transaction newCredit(String description, double value) {
-        return new Transaction(new Date(), description, Type.CREDIT, value);
+    public static Transaction newCredit(String description, double amount) {
+        return new Transaction(new Date(), description, Type.CREDIT, amount);
     }
 
     /**
@@ -81,8 +81,8 @@ public class Transaction implements java.io.Serializable {
     }
 
     /** Retorna o valor do movimento */
-    public double getAmmount() {
-        return value.doubleValue();
+    public double getAmount() {
+        return amount.doubleValue();
     }
 
     /** Retorna o tipo do movimento */
@@ -98,7 +98,7 @@ public class Transaction implements java.io.Serializable {
     public String toString() {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         return String.format("%s   %-35s   %-7s   %.2f",
-             df.format(date), description, type, value.doubleValue()
+             df.format(date), description, type, amount.doubleValue()
         );
     }
 }
