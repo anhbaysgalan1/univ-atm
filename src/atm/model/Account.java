@@ -64,7 +64,7 @@ public class Account {
     }
 
     /**
-     * Define o saldo. Usado pelos testes e pela persistência de dados
+     * Define o saldo. Usado pela persistência de dados
      *
      * @param balance  o saldo a definir
      */
@@ -86,13 +86,6 @@ public class Account {
         if (transaction != null) {
             transactions.add(transaction);
         }
-    }
-
-    /** Retorna o último movimento adicionado */
-    Transaction getLastTransaction() {
-        return !transactions.isEmpty()
-                    ? transactions.get(transactions.size()-1)
-                    : null;
     }
 
     /**

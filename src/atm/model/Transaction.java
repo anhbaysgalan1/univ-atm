@@ -38,7 +38,7 @@ public class Transaction implements java.io.Serializable {
     /**
      * Construtor.
      *
-     * Apenas deve ser usado pelos testes, e AccountPersist,
+     * Apenas deve ser usado por AccountPersist,
      * para poder definir uma data específica.
      *
      * @param date         data do movimento
@@ -101,59 +101,4 @@ public class Transaction implements java.io.Serializable {
              df.format(date), description, type, value.doubleValue()
         );
     }
-
-    /**
-     * Verifica se um objecto é igual a este.
-     * Utilizado nos testes, com assertEquals().
-     *
-     * @param obj  a referência do objecto para comparar
-     * @return     true se este objecto é igual ao argumento obj;
-     *             false caso contrário
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Transaction other = (Transaction) obj;
-        if (this.date != other.date &&
-                (this.date == null || !this.date.equals(other.date))) {
-            return false;
-        }
-        if ((this.description == null)
-                ? (other.description != null)
-                : !this.description.equals(other.description)) {
-            return false;
-        }
-        if (this.type != other.type) {
-            return false;
-        }
-        if (this.value != other.value &&
-                (this.value == null || !this.value.equals(other.value))) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Retorna um código único para este objecto.
-     * Deve ser implementado sempre que se faz o override do equals(Object).
-     *
-     * @see equals(Object)
-     *
-     * @return  um código único para este objecto
-     */
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 59 * hash + (this.date != null ? this.date.hashCode() : 0);
-        hash = 59 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 59 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 59 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
-    }
-
 }

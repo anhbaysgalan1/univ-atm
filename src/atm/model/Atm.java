@@ -43,19 +43,6 @@ public class Atm {
         funds = Math.abs(startingFunds);
     }
 
-    /** Retorna a quantidade disponível no cofre */
-    double getFunds() {
-        return funds;
-    }
-
-    /**
-     * Verifica se tem dinheiro suficiente no cofre
-     * para efectuar um levantamento
-     */
-    public boolean hasEnoughWithdrawalFunds() {
-        return funds >= MINIMAL_WITHDRAWAL;
-    }
-
     /**
      * Deposita dinheiro numa conta de cliente
      *
@@ -157,7 +144,7 @@ public class Atm {
      * @return       entidade para ser usada num pagamento de serviços
      */
     public String getPhoneEntity(String phone) {
-        if (Payment.isValidReference(phone)) {
+        if (Payment.isValidReference(phone) && phone.charAt(0) == '9') {
             switch (phone.charAt(1)){
                 case '1': return "10158";  // vodafone
                 case '3': return "20638";  // optimus
