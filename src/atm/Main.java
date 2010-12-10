@@ -221,11 +221,6 @@ public class Main {
         System.out.println("\n\n| "+header+" |\n");
     }
 
-    public static void pause() {
-        printStatusMessage("\n<Prima ENTER para continuar…>\n");
-        input.nextLine();
-    }
-
     private static void askInput(String msg) {
         System.out.print(msg);
     }
