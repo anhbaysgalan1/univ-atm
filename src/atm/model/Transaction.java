@@ -32,14 +32,14 @@ public class Transaction implements java.io.Serializable {
     /** Tipo de movimento */
     private Type type;
 
-    /** Saldo */
+    /** Valor do movimento */
     private Double amount;
 
     /**
      * Construtor.
      *
-     * Apenas deve ser usado pelos testes, e AccountPersist,
-     * para poder definir uma data específica.
+     * Apenas deve ser usado pelos testes, métodos fábrica abaixo, 
+     * e AccountMapper, para poder definir uma data específica.
      *
      * @param date         data do movimento
      * @param description  descrição do movimento
