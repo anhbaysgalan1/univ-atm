@@ -21,8 +21,8 @@ public class Account {
     /** Colecção com os movimentos */
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-    /** Objecto de persistência, com a fonte de dados (não serializado) */
-    private transient AccountMapper mapper;
+    /** Objecto de persistência, com a fonte de dados */
+    private AccountMapper mapper;
 
     /**
      * Construtor por defeito.
