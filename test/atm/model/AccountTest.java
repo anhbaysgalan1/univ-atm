@@ -1,6 +1,8 @@
 
 package atm.model;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.IOException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.Rule;
@@ -70,5 +72,43 @@ public class AccountTest {
         account.setBalance(150.0);
         account.debit(150.0);
         assertEquals(0.0, account.getBalance(), PRECISION);
+    }
+
+    @Test
+    public void canGetTenLastestTransactions() {
+        List<Transaction> source = generateTransactions(15);
+        List<Transaction> actual = account.getLatestTransactions(10);
+        assertLatestTransactions(10, source, actual);
+    }
+
+    @Test
+    public void canGetLastestTransactionsWhenLessThenTenAvailable() {
+        List<Transaction> source = generateTransactions(5);
+        List<Transaction> actual = account.getLatestTransactions(10);
+        assertLatestTransactions(5, source, actual);
+    }
+
+    private void assertLatestTransactions(int expected,
+                                                List<Transaction> source,
+                                                List<Transaction> actual) {
+        assertEquals(expected, actual.size());
+        for (int i = 0; i < expected; i++) {
+            assertEquals(
+                source.get(source.size()-1-i).getAmount(),
+                actual.get(i).getAmount(),
+                1e-6
+            );
+        }
+    }
+
+    private List<Transaction> generateTransactions(int num) {
+        Transaction transaction;
+        List<Transaction> transactions = new ArrayList<Transaction>(num);
+        for (int i = 1; i <= num; i++) {
+            transaction = Transaction.newCredit("Crédito "+i, 100+2*i);
+            transactions.add(transaction);
+            account.addTransaction(transaction);
+        }
+        return transactions;
     }
 }

@@ -105,7 +105,7 @@ public class Account {
         }
 
         List<Transaction> latest = new ArrayList<Transaction>(max);
-        for (int i = max-1; i >= 0; i--) {
+        for (int i = transactions.size()-1; max > 0; i--, max--) {
             latest.add(transactions.get(i));
         }
 
