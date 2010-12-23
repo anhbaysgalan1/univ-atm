@@ -25,12 +25,11 @@ public class Main extends JFrame {
     JButton confirm;
     JButton abort;
 
-    private Font BIGGER_FONT = new Font(Font.SERIF, Font.PLAIN, 20);
-
     public Main(double startingFunds) {
         atm = new Atm(startingFunds);
         setTitle("Multibanco");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(300, 300));
         reset();
     }
 
@@ -56,7 +55,7 @@ public class Main extends JFrame {
     private JComponent operations() {
         confirm = new JButton("Confirmar");
         abort   = new JButton("Abortar");
-        
+
         abort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 reset();
@@ -81,7 +80,7 @@ public class Main extends JFrame {
         pwdPin.setMaximumSize(pwdPin.getPreferredSize());
         pwdPin.setHorizontalAlignment(JTextField.CENTER);
         pwdPin.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         ActionListener loginListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String pin = String.valueOf(pwdPin.getPassword());
@@ -98,6 +97,7 @@ public class Main extends JFrame {
                     updateContent(mainMenu());
                     pwdPin.removeActionListener(this);
                     confirm.setEnabled(false);
+                    abort.setText("Sair");
                 }
             }
         };
@@ -132,7 +132,11 @@ public class Main extends JFrame {
 
         checkbalance.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Saldo!");
+                updateContent(balanceScreen());
+                confirm.setText("Outras operações");
+                confirm.setEnabled(true);
+                confirm.addActionListener(new MenuListener());
+                abort.setText("Sair");
             }
         });
 
@@ -164,19 +168,67 @@ public class Main extends JFrame {
             deposits
         };
 
-        JLabel title = new JLabel("Menu Principal");
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        title.setFont(BIGGER_FONT);
-
-        menu.add(title);
+        menu.add(screenTitle("Menu Principal"));
         menu.add(Box.createRigidArea(new Dimension(0, 10)));
         for (int i = 0; i < order.length; i++) {
-            order[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             menu.add(Box.createRigidArea(new Dimension(0, 5)));
-            menu.add(order[i]);
+            menu.add(centerComponent(order[i]));
         }
         menu.add(Box.createVerticalGlue());
 
         return menu;
+    }
+
+    private JComponent balanceScreen() {
+        Box screen = Box.createVerticalBox();
+
+        screen.add(screenTitle("Saldo de Conta"));
+        screen.add(Box.createVerticalGlue());
+
+        screen.add(centerComponent(boldLabel("Conta Número")));
+        screen.add(Box.createRigidArea(new Dimension(0, 5)));
+        screen.add(centerComponent(
+            new JLabel(account.getNumber()))
+        );
+        screen.add(Box.createVerticalGlue());
+
+        screen.add(centerComponent(boldLabel("Saldo Actual")));
+        screen.add(Box.createRigidArea(new Dimension(0, 5)));
+        screen.add(centerComponent(
+            new JLabel(formatCurrency(account.getBalance()))
+        ));
+        screen.add(Box.createVerticalGlue());
+
+        return screen;
+    }
+
+    class MenuListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            updateContent(mainMenu());
+            confirm.removeActionListener(this);
+            confirm.setEnabled(false);
+        }
+    }
+
+    private JComponent centerComponent(JComponent component) {
+        component.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return component;
+    }
+
+    private JLabel screenTitle(String text) {
+        JLabel title = new JLabel(text);
+        title.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return title;
+    }
+
+    private JLabel boldLabel(String text) {
+        JLabel newLabel = new JLabel(text);
+        newLabel.setFont(newLabel.getFont().deriveFont(Font.BOLD));
+        return newLabel;
+    }
+
+    private String formatCurrency(double amount) {
+        return String.format("%.2f euros", amount);
     }
 }
