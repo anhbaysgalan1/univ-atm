@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import atm.model.*;
+import javax.swing.border.*;
 
 public class Main extends JFrame {
     Atm atm;
@@ -33,6 +34,7 @@ public class Main extends JFrame {
 
     private void reset() {
         JPanel root = new JPanel(new BorderLayout());
+        root.setBorder(new EmptyBorder(10, 10, 10, 10));
         root.add(operations(), BorderLayout.PAGE_END);
         root.add(loginScreen(), BorderLayout.CENTER);
         root.revalidate();
@@ -60,6 +62,7 @@ public class Main extends JFrame {
         });
 
         Box buttonbox = Box.createHorizontalBox();
+        buttonbox.setBorder(new EmptyBorder(10, 0, 0, 0));
         buttonbox.add(Box.createHorizontalGlue());
         buttonbox.add(confirm);
         buttonbox.add(Box.createHorizontalGlue());
@@ -69,16 +72,30 @@ public class Main extends JFrame {
     }
 
     private JComponent loginScreen() {
-        JPasswordField pwdPin = new JPasswordField(10);
-        pwdPin.addActionListener(new LoginListener(pwdPin));
-        confirm.addActionListener(new LoginListener(pwdPin));
+        JLabel lblPin = new JLabel("Introduza o seu PIN:");
+        lblPin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel login = new JPanel(new BorderLayout());
-        login.setPreferredSize(new Dimension(300, 300));
-        login.add(pwdPin, BorderLayout.CENTER);
+        JPasswordField pwdPin = new JPasswordField(7);
+        pwdPin.setMaximumSize(pwdPin.getPreferredSize());
+        pwdPin.setHorizontalAlignment(JTextField.CENTER);
+        pwdPin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        ActionListener loginListener = new LoginListener(pwdPin);
+        pwdPin.addActionListener(loginListener);
+        confirm.addActionListener(loginListener);
 
-        pwdPin.grabFocus();
-        return login;
+        JPanel loginPane = new JPanel();
+        loginPane.setLayout(new BoxLayout(loginPane, BoxLayout.Y_AXIS));
+        loginPane.setPreferredSize(new Dimension(300, 300));
+
+        loginPane.add(Box.createVerticalGlue());
+        loginPane.add(lblPin);
+        loginPane.add(Box.createRigidArea(new Dimension(0, 5)));
+        loginPane.add(pwdPin);
+        loginPane.add(Box.createVerticalGlue());
+
+        pwdPin.requestFocusInWindow();
+        return loginPane;
     }
 
     class LoginListener implements ActionListener {
@@ -100,6 +117,7 @@ public class Main extends JFrame {
                 pwdPin.grabFocus();
             } else {
                 updateContent(mainMenu());
+                pwdPin.removeActionListener(this);
                 confirm.setEnabled(false);
             }
         }
