@@ -8,12 +8,6 @@ import atm.model.*;
 import javax.swing.border.*;
 
 public class Main extends JFrame {
-    Atm atm;
-    Account account;
-
-    JButton confirm;
-    JButton abort;
-    JPanel content;
 
     public static void main(String[] args) {
         final double funds =
@@ -24,6 +18,14 @@ public class Main extends JFrame {
             }
         });
     }
+
+    Atm atm;
+    Account account;
+
+    JButton confirm;
+    JButton abort;
+
+    private Font BIGGER_FONT = new Font(Font.SERIF, Font.PLAIN, 20);
 
     public Main(double startingFunds) {
         atm = new Atm(startingFunds);
@@ -75,52 +77,44 @@ public class Main extends JFrame {
         JLabel lblPin = new JLabel("Introduza o seu PIN:");
         lblPin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPasswordField pwdPin = new JPasswordField(7);
+        final JPasswordField pwdPin = new JPasswordField(7);
         pwdPin.setMaximumSize(pwdPin.getPreferredSize());
         pwdPin.setHorizontalAlignment(JTextField.CENTER);
         pwdPin.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        ActionListener loginListener = new LoginListener(pwdPin);
+        ActionListener loginListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String pin = String.valueOf(pwdPin.getPassword());
+                account = atm.getAccountWithPin(pin);
+                if (account == null) {
+                    JOptionPane.showMessageDialog(Main.this,
+                        "Pin inválido. Tente de novo.",
+                        "Erro",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    pwdPin.setText("");
+                    pwdPin.grabFocus();
+                } else {
+                    updateContent(mainMenu());
+                    pwdPin.removeActionListener(this);
+                    confirm.setEnabled(false);
+                }
+            }
+        };
         pwdPin.addActionListener(loginListener);
         confirm.addActionListener(loginListener);
 
-        JPanel loginPane = new JPanel();
-        loginPane.setLayout(new BoxLayout(loginPane, BoxLayout.Y_AXIS));
-        loginPane.setPreferredSize(new Dimension(300, 300));
+        Box login = Box.createVerticalBox();
+        login.setPreferredSize(new Dimension(300, 220));
 
-        loginPane.add(Box.createVerticalGlue());
-        loginPane.add(lblPin);
-        loginPane.add(Box.createRigidArea(new Dimension(0, 5)));
-        loginPane.add(pwdPin);
-        loginPane.add(Box.createVerticalGlue());
+        login.add(Box.createVerticalGlue());
+        login.add(lblPin);
+        login.add(Box.createRigidArea(new Dimension(0, 5)));
+        login.add(pwdPin);
+        login.add(Box.createVerticalGlue());
 
         pwdPin.requestFocusInWindow();
-        return loginPane;
-    }
-
-    class LoginListener implements ActionListener {
-        JPasswordField pwdPin;
-        LoginListener(JPasswordField pwdPin) {
-            this.pwdPin = pwdPin;
-        }
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String pin = String.valueOf(pwdPin.getPassword());
-            account = atm.getAccountWithPin(pin);
-            if (account == null) {
-                JOptionPane.showMessageDialog(Main.this,
-                    "Pin inválido. Tente de novo.",
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE
-                );
-                pwdPin.setText("");
-                pwdPin.grabFocus();
-            } else {
-                updateContent(mainMenu());
-                pwdPin.removeActionListener(this);
-                confirm.setEnabled(false);
-            }
-        }
+        return login;
     }
 
     private JComponent mainMenu() {
@@ -160,12 +154,28 @@ public class Main extends JFrame {
             }
         });
 
-        JPanel menu = new JPanel();
-        menu.add(withdrawals);
-        menu.add(checkbalance);
-        menu.add(transactions);
-        menu.add(payments);
-        menu.add(deposits);
+        Box menu = Box.createVerticalBox();
+
+        JButton[] order = {
+            withdrawals,
+            checkbalance,
+            transactions,
+            payments,
+            deposits
+        };
+
+        JLabel title = new JLabel("Menu Principal");
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setFont(BIGGER_FONT);
+
+        menu.add(title);
+        menu.add(Box.createRigidArea(new Dimension(0, 10)));
+        for (int i = 0; i < order.length; i++) {
+            order[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+            menu.add(Box.createRigidArea(new Dimension(0, 5)));
+            menu.add(order[i]);
+        }
+        menu.add(Box.createVerticalGlue());
 
         return menu;
     }
