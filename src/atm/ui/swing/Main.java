@@ -133,16 +133,16 @@ public class Main extends JFrame {
         checkbalance.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateContent(balanceScreen());
-                confirm.setText("Outras operações");
                 confirm.setEnabled(true);
                 confirm.addActionListener(new MenuListener());
-                abort.setText("Sair");
             }
         });
 
         transactions.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Movimentos!");
+                updateContent(transactionsScreen());
+                confirm.setEnabled(true);
+                confirm.addActionListener(new MenuListener());
             }
         });
 
@@ -157,6 +157,9 @@ public class Main extends JFrame {
                 System.out.println("Depósitos!");
             }
         });
+
+        confirm.setText("Outras operações");
+        abort.setText("Sair");
 
         Box menu = Box.createVerticalBox();
 
@@ -197,6 +200,41 @@ public class Main extends JFrame {
         screen.add(centerComponent(
             new JLabel(formatCurrency(account.getBalance()))
         ));
+        screen.add(Box.createVerticalGlue());
+
+        return screen;
+    }
+
+    private JComponent transactionsScreen() {
+        java.util.List transactions = account.getLatestTransactions(10);
+
+        String[] columns = {"Data", "Descrição", "Tipo", "Valor"};
+        Object[][] data  = new Object[transactions.size()][4];
+
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction trans = (Transaction) transactions.get(i);
+            data[i] = new Object[] {
+                trans.getDateString(),
+                trans.getDescription(),
+                trans.getTypeString(),
+                trans.getAmount()
+            };
+        }
+
+        JTable table = new JTable(data, columns);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setFillsViewportHeight(true);
+        table.setEnabled(false);
+
+        Box screen = Box.createVerticalBox();
+        screen.add(screenTitle("Movimentos"));
+        screen.add(Box.createRigidArea(new Dimension(0, 10)));
+        screen.add(centerComponent(new JLabel(
+            "<html><b>Saldo actual:</b> "+formatCurrency(account.getBalance())+"</html>"
+        )));
+        screen.add(Box.createRigidArea(new Dimension(0, 10)));
+        screen.add(scrollPane);
         screen.add(Box.createVerticalGlue());
 
         return screen;

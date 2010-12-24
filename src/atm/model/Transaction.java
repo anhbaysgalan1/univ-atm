@@ -75,6 +75,12 @@ public class Transaction implements java.io.Serializable {
         return new Transaction(new Date(), description, Type.DEBIT, value);
     }
 
+    /** Retorna uma string representativa da data do movimento */
+    public String getDateString() {
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return df.format(date);
+    }
+
     /** Retorna a descrição do movimento */
     public String getDescription() {
         return description;
@@ -90,15 +96,19 @@ public class Transaction implements java.io.Serializable {
         return type;
     }
 
+    /** Retorna uma string representativa do tipo de movimento */
+    public String getTypeString() {
+        return type.toString();
+    }
+
     /**
      * String formatada que representa este objecto.
      * Usado para mostrar os movimentos no ecrã.
      */
     @Override
     public String toString() {
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         return String.format("%s   %-35s   %-7s   %.2f",
-             df.format(date), description, type, amount.doubleValue()
+             getDateString(), description, type, amount.doubleValue()
         );
     }
 
