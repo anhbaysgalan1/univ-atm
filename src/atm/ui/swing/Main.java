@@ -144,7 +144,9 @@ public class Main extends JFrame {
 
         payments.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Pagamentos!");
+                updateContent(paymentsScreen());
+                confirm.setEnabled(true);
+                confirm.addActionListener(new MenuListener());
             }
         });
 
@@ -219,11 +221,9 @@ public class Main extends JFrame {
         ActionListener otherWithdrawalListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    double amount = Double.parseDouble(withdrawal.getText());
+                    double amount = validateAmount(withdrawal.getText());
                     atm.withdraw(amount, account);
                     showMainMenu();
-                } catch (NumberFormatException ex) {
-                    showError("Valor inválido. Tente novamente.", withdrawal);
                 } catch (IllegalArgumentException ex) {
                     showError(ex.getMessage(), withdrawal);
                 }
@@ -302,6 +302,111 @@ public class Main extends JFrame {
         return screen;
     }
 
+    private JComponent paymentsScreen() {
+        JButton elect = new JButton("Conta de Electricidade");
+        JButton water = new JButton("Conta da Água");
+        JButton phone = new JButton("Carregamento Telemóvel");
+
+        elect.setActionCommand("e");
+        water.setActionCommand("r");
+        phone.setActionCommand("p");
+
+        ActionListener choosePaymentListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JButton source = (JButton) e.getSource();
+                updateContent(
+                    paymentScreen(source.getText(), source.getActionCommand())
+                );
+            }
+        };
+
+        elect.addActionListener(choosePaymentListener);
+        water.addActionListener(choosePaymentListener);
+        phone.addActionListener(choosePaymentListener);
+
+        JPanel grid = new JPanel(new GridLayout(0, 1));
+        grid.add(elect);
+        grid.add(water);
+        grid.add(phone);
+
+        Box screen = Box.createVerticalBox();
+        screen.add(screenTitle("Pagamento de Serviços"));
+        screen.add(Box.createRigidArea(new Dimension(0, 15)));
+        screen.add(grid);
+        screen.add(Box.createVerticalGlue());
+        return screen;
+    }
+
+    private JComponent paymentScreen(String title, String command) {
+        confirm.setText(CONFIRM);
+        removeActionListeners(confirm);
+        confirm.setActionCommand(command);
+
+        final JTextField fldEntity = new JTextField(6);
+        final JTextField fldRefnce = new JTextField(10);
+        final JTextField fldPhone  = new JTextField(10);
+        final JTextField fldAmount = new JTextField(6);
+
+        final String[] labels = command.equals("p")
+            ? new String[] {"Telemóvel", "Montante"}
+            : new String[] {"Entidade", "Referência", "Montante"};
+
+        final JTextField[] fields = command.equals("p")
+            ? new JTextField[] {fldPhone, fldAmount}
+            : new JTextField[] {fldEntity, fldRefnce, fldAmount};
+
+        ActionListener paymentListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String command = confirm.getActionCommand();
+                try {
+                    String refnce = command.equals("p")
+                        ? fldPhone.getText()
+                        : fldRefnce.getText();
+
+                    String entity = command.equals("p")
+                        ? atm.getPhoneEntity(refnce)
+                        : fldEntity.getText();
+
+                    double amount = validateAmount(fldAmount.getText());
+
+                    Payment payment = new Payment(entity, refnce, amount);
+
+                    switch (command.charAt(0)) {
+                        case 'p': atm.payPhoneBill(payment, account); break;
+                        case 'w': atm.payWaterBill(payment, account); break;
+                        case 'e': atm.payElectricityBill(payment, account);
+                                                                      break;
+                        default:
+                            throw new RuntimeException(
+                                "Pagamento de serviço desconhecido!"
+                            );
+                    }
+                    showMainMenu();
+                } catch (IllegalArgumentException ex) {
+                    showError(ex.getMessage(), fields);
+                }
+            }
+        };
+
+        confirm.addActionListener(paymentListener);
+
+        Box screen = Box.createVerticalBox();
+        screen.add(screenTitle(title));
+        screen.add(Box.createVerticalGlue());
+
+        for (int i = 0; i < labels.length; i++) {
+            fields[i].addActionListener(paymentListener);
+            fields[i].setHorizontalAlignment(JTextField.CENTER);
+            fields[i].setMaximumSize(fields[i].getPreferredSize());
+
+            screen.add(centerComponent(boldLabel(labels[i])));
+            screen.add(centerComponent(fields[i]));
+            screen.add(Box.createVerticalGlue());
+        }
+
+        return screen;
+    }
+
     private JComponent depositScreen() {
         final JTextField deposit = new JTextField(6);
         deposit.setMaximumSize(deposit.getPreferredSize());
@@ -310,11 +415,11 @@ public class Main extends JFrame {
         ActionListener depositListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    double amount = Double.parseDouble(deposit.getText());
+                    double amount = validateAmount(deposit.getText());
                     atm.deposit(amount, account);
                     showMainMenu();
-                } catch (NumberFormatException ex) {
-                    showError("Valor inválido. Tente novamente.", deposit);
+                } catch (IllegalArgumentException ex) {
+                    showError(ex.getMessage(), deposit);
                 }
             }
         };
@@ -378,6 +483,14 @@ public class Main extends JFrame {
 
     private void showError(String error, JTextField reset) {
         showError(error, new JTextField[] {reset});
+    }
+
+    private double validateAmount(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Montante inválido.");
+        }
     }
 
     private String formatCurrency(double amount) {
