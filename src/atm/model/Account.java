@@ -121,16 +121,18 @@ public class Account {
      */
     public void processTransaction(Transaction transaction) {
         double amount = transaction.getAmount();
-        switch (transaction.getType()) {
-            case CREDIT:
-                credit(amount);
-                break;
-            case DEBIT:
-                debit(amount);
-                break;
+        if (amount > 0) {
+            switch (transaction.getType()) {
+                case CREDIT:
+                    credit(amount);
+                    break;
+                case DEBIT:
+                    debit(amount);
+                    break;
+            }
+            addTransaction(transaction);
+            mapper.save(this);
         }
-        addTransaction(transaction);
-        mapper.save(this);
     }
 
     /**

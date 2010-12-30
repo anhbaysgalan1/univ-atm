@@ -90,9 +90,7 @@ public class Main extends JFrame {
                 if (account != null) {
                     showMainMenu();
                 } else {
-                    showError("Pin inválido. Tente de novo.",
-                        new JPasswordField[] {pwdPin}
-                    );
+                    showError("Pin inválido. Tente de novo.", pwdPin);
                 }
             }
         };
@@ -122,7 +120,9 @@ public class Main extends JFrame {
 
         withdrawals.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Levantamentos!");
+                updateContent(withdrawalScreen());
+                confirm.setEnabled(true);
+                confirm.addActionListener(new MenuListener());
             }
         });
 
@@ -177,6 +177,77 @@ public class Main extends JFrame {
         menu.add(Box.createVerticalGlue());
 
         return menu;
+    }
+
+    private JComponent withdrawalScreen() {
+        ActionListener withdrawalListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JButton source = (JButton) e.getSource();
+                int amount = Integer.parseInt(source.getActionCommand());
+                if (amount != 0) {
+                    atm.withdraw(amount, account);
+                    showMainMenu();
+                } else {
+                    updateContent(otherWithdrawalScreen());
+                }
+            }
+        };
+
+        JButton btn;
+        String[] order = {"20", "50", "100", "150", "200", "0"};
+
+        JPanel grid = new JPanel(new GridLayout(0, 2));
+        for (int i = 0; i < order.length; i++) {
+            btn = new JButton(
+                order[i].equals("0") ? "Outros valores" : order[i]
+            );
+            btn.setActionCommand(order[i]);
+            btn.addActionListener(withdrawalListener);
+
+            grid.add(btn);
+        }
+
+        Box screen = Box.createVerticalBox();
+        screen.add(screenTitle("Levantamento"));
+        screen.add(Box.createRigidArea(new Dimension(0, 15)));
+        screen.add(grid);
+        screen.add(Box.createVerticalGlue());
+        return screen;
+    }
+
+    private JComponent otherWithdrawalScreen() {
+        confirm.setText(CONFIRM);
+        removeActionListeners(confirm);
+
+        final JTextField withdrawal = new JTextField(6);
+        withdrawal.setMaximumSize(withdrawal.getPreferredSize());
+        withdrawal.setHorizontalAlignment(JTextField.CENTER);
+
+        ActionListener otherWithdrawalListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double amount = Double.parseDouble(withdrawal.getText());
+                    atm.withdraw(amount, account);
+                    showMainMenu();
+                } catch (NumberFormatException ex) {
+                    showError("Valor inválido. Tente novamente.", withdrawal);
+                } catch (IllegalArgumentException ex) {
+                    showError(ex.getMessage(), withdrawal);
+                }
+            }
+        };
+
+        withdrawal.addActionListener(otherWithdrawalListener);
+        confirm.addActionListener(otherWithdrawalListener);
+
+        Box screen = Box.createVerticalBox();
+        screen.add(screenTitle("Levantamento"));
+        screen.add(screenTitle("de outras importâncias"));
+        screen.add(Box.createVerticalGlue());
+        screen.add(centerComponent(withdrawal));
+        screen.add(Box.createVerticalGlue());
+        return screen;
+        
     }
 
     private JComponent balanceScreen() {
@@ -250,9 +321,7 @@ public class Main extends JFrame {
                     atm.deposit(amount, account);
                     showMainMenu();
                 } catch (NumberFormatException ex) {
-                    showError("Valor inválido. Tente novamente.",
-                        new JTextField[] {deposit}
-                    );
+                    showError("Valor inválido. Tente novamente.", deposit);
                 }
             }
         };
@@ -312,6 +381,10 @@ public class Main extends JFrame {
             reset[i].setText("");
         }
         reset[0].grabFocus();
+    }
+
+    private void showError(String error, JTextField reset) {
+        showError(error, new JTextField[] {reset});
     }
 
     private String formatCurrency(double amount) {
