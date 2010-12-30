@@ -19,11 +19,15 @@ public class Main extends JFrame {
         });
     }
 
-    Atm atm;
-    Account account;
+    private final String CONFIRM = "Confirmar";
+    private final String OTHEROP = "Outras operações";
+    private final String ABORT_T = "Abortar";
 
-    JButton confirm;
-    JButton abort;
+    private Atm atm;
+    private Account account;
+
+    private JButton confirm;
+    private JButton abort;
 
     public Main(double startingFunds) {
         atm = new Atm(startingFunds);
@@ -53,8 +57,8 @@ public class Main extends JFrame {
     }
 
     private JComponent operations() {
-        confirm = new JButton("Confirmar");
-        abort   = new JButton("Abortar");
+        confirm = new JButton(CONFIRM);
+        abort   = new JButton(ABORT_T);
 
         abort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -74,33 +78,25 @@ public class Main extends JFrame {
 
     private JComponent loginScreen() {
         JLabel lblPin = new JLabel("Introduza o seu PIN:");
-        lblPin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final JPasswordField pwdPin = new JPasswordField(7);
         pwdPin.setMaximumSize(pwdPin.getPreferredSize());
         pwdPin.setHorizontalAlignment(JTextField.CENTER);
-        pwdPin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         ActionListener loginListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String pin = String.valueOf(pwdPin.getPassword());
                 account = atm.getAccountWithPin(pin);
-                if (account == null) {
-                    JOptionPane.showMessageDialog(Main.this,
-                        "Pin inválido. Tente de novo.",
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    pwdPin.setText("");
-                    pwdPin.grabFocus();
+                if (account != null) {
+                    showMainMenu();
                 } else {
-                    updateContent(mainMenu());
-                    pwdPin.removeActionListener(this);
-                    confirm.setEnabled(false);
-                    abort.setText("Sair");
+                    showError("Pin inválido. Tente de novo.",
+                        new JPasswordField[] {pwdPin}
+                    );
                 }
             }
         };
+
         pwdPin.addActionListener(loginListener);
         confirm.addActionListener(loginListener);
 
@@ -108,9 +104,9 @@ public class Main extends JFrame {
         login.setPreferredSize(new Dimension(300, 220));
 
         login.add(Box.createVerticalGlue());
-        login.add(lblPin);
+        login.add(centerComponent(lblPin));
         login.add(Box.createRigidArea(new Dimension(0, 5)));
-        login.add(pwdPin);
+        login.add(centerComponent(pwdPin));
         login.add(Box.createVerticalGlue());
 
         pwdPin.requestFocusInWindow();
@@ -154,12 +150,13 @@ public class Main extends JFrame {
 
         deposits.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Depósitos!");
+                updateContent(depositScreen());
+                confirm.setText(CONFIRM);
+                confirm.setEnabled(true);
             }
         });
 
-        confirm.setText("Outras operações");
-        abort.setText("Sair");
+        confirm.setText(OTHEROP);
 
         Box menu = Box.createVerticalBox();
 
@@ -231,7 +228,8 @@ public class Main extends JFrame {
         screen.add(screenTitle("Movimentos"));
         screen.add(Box.createRigidArea(new Dimension(0, 10)));
         screen.add(centerComponent(new JLabel(
-            "<html><b>Saldo actual:</b> "+formatCurrency(account.getBalance())+"</html>"
+            "<html><b>Saldo actual:</b> "
+            +formatCurrency(account.getBalance())+"</html>"
         )));
         screen.add(Box.createRigidArea(new Dimension(0, 10)));
         screen.add(scrollPane);
@@ -240,11 +238,51 @@ public class Main extends JFrame {
         return screen;
     }
 
+    private JComponent depositScreen() {
+        final JTextField deposit = new JTextField(6);
+        deposit.setMaximumSize(deposit.getPreferredSize());
+        deposit.setHorizontalAlignment(JTextField.CENTER);
+
+        ActionListener depositListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double amount = Double.parseDouble(deposit.getText());
+                    atm.deposit(amount, account);
+                    showMainMenu();
+                } catch (NumberFormatException ex) {
+                    showError("Valor inválido. Tente novamente.",
+                        new JTextField[] {deposit}
+                    );
+                }
+            }
+        };
+
+        deposit.addActionListener(depositListener);
+        confirm.addActionListener(depositListener);
+
+        Box screen = Box.createVerticalBox();
+        screen.add(screenTitle("Depósito"));
+        screen.add(Box.createVerticalGlue());
+        screen.add(centerComponent(deposit));
+        screen.add(Box.createVerticalGlue());
+        return screen;
+    }
+
     class MenuListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            updateContent(mainMenu());
-            confirm.removeActionListener(this);
-            confirm.setEnabled(false);
+            showMainMenu();
+        }
+    }
+
+    private void showMainMenu() {
+        updateContent(mainMenu());
+        removeActionListeners(confirm);
+        confirm.setEnabled(false);
+    }
+
+    private void removeActionListeners(JButton button) {
+        for (ActionListener al : button.getActionListeners()) {
+            button.removeActionListener(al);
         }
     }
 
@@ -264,6 +302,16 @@ public class Main extends JFrame {
         JLabel newLabel = new JLabel(text);
         newLabel.setFont(newLabel.getFont().deriveFont(Font.BOLD));
         return newLabel;
+    }
+
+    private void showError(String error, JTextField[] reset) {
+        JOptionPane.showMessageDialog(Main.this, error, "Erro",
+            JOptionPane.ERROR_MESSAGE
+        );
+        for (int i = 0; i < reset.length; i++) {
+            reset[i].setText("");
+        }
+        reset[0].grabFocus();
     }
 
     private String formatCurrency(double amount) {
