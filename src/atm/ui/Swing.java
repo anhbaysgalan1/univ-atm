@@ -1,5 +1,5 @@
 
-package atm.ui.swing;
+package atm.ui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -7,14 +7,14 @@ import javax.swing.*;
 import atm.model.*;
 import javax.swing.border.*;
 
-public class Main extends JFrame {
+public class Swing extends JFrame {
 
     public static void main(String[] args) {
         final double funds =
                 (args.length > 0) ? Double.parseDouble(args[0]) : 500;
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new Main(funds).setVisible(true);
+                new Swing(funds).setVisible(true);
             }
         });
     }
@@ -29,7 +29,7 @@ public class Main extends JFrame {
     private JButton confirm;
     private JButton abort;
 
-    public Main(double startingFunds) {
+    public Swing(double startingFunds) {
         atm = new Atm(startingFunds);
         setTitle("Multibanco");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -472,7 +472,7 @@ public class Main extends JFrame {
     }
 
     private void showError(String error, JTextField[] reset) {
-        JOptionPane.showMessageDialog(Main.this, error, "Erro",
+        JOptionPane.showMessageDialog(Swing.this, error, "Erro",
             JOptionPane.ERROR_MESSAGE
         );
         for (int i = 0; i < reset.length; i++) {
