@@ -33,7 +33,7 @@ public class Main extends JFrame {
         atm = new Atm(startingFunds);
         setTitle("Multibanco");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(300, 300));
+        setMinimumSize(new Dimension(400, 350));
         reset();
     }
 
@@ -158,24 +158,17 @@ public class Main extends JFrame {
 
         confirm.setText(OTHEROP);
 
+        JPanel grid = new JPanel(new GridLayout(0, 1, 0, 3));
+        grid.add(withdrawals);
+        grid.add(checkbalance);
+        grid.add(transactions);
+        grid.add(payments);
+        grid.add(deposits);
+
         Box menu = Box.createVerticalBox();
-
-        JButton[] order = {
-            withdrawals,
-            checkbalance,
-            transactions,
-            payments,
-            deposits
-        };
-
         menu.add(screenTitle("Menu Principal"));
-        menu.add(Box.createRigidArea(new Dimension(0, 10)));
-        for (int i = 0; i < order.length; i++) {
-            menu.add(Box.createRigidArea(new Dimension(0, 5)));
-            menu.add(centerComponent(order[i]));
-        }
-        menu.add(Box.createVerticalGlue());
-
+        menu.add(Box.createRigidArea(new Dimension(0, 15)));
+        menu.add(grid);
         return menu;
     }
 
