@@ -4,16 +4,21 @@ package atm.ui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import atm.model.*;
 import javax.swing.border.*;
+import atm.model.*;
 
 public class Swing extends JFrame {
 
+    // Este método existe para poder correr a aplicação gráfica directamente
     public static void main(String[] args) {
-        final double funds =
-                (args.length > 0) ? Double.parseDouble(args[0]) : 500;
+        run(500);
+    }
+
+    public static void run(final double funds) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                Thread.currentThread()
+                      .setUncaughtExceptionHandler(new UncaughtException());
                 new Swing(funds).setVisible(true);
             }
         });
@@ -337,10 +342,9 @@ public class Swing extends JFrame {
         return screen;
     }
 
-    private JComponent paymentScreen(String title, String command) {
+    private JComponent paymentScreen(String title, final String command) {
         confirm.setText(CONFIRM);
         removeActionListeners(confirm);
-        confirm.setActionCommand(command);
 
         final JTextField fldEntity = new JTextField(6);
         final JTextField fldRefnce = new JTextField(10);
@@ -357,7 +361,6 @@ public class Swing extends JFrame {
 
         ActionListener paymentListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String command = confirm.getActionCommand();
                 try {
                     String refnce = command.equals("p")
                         ? fldPhone.getText()
@@ -495,5 +498,16 @@ public class Swing extends JFrame {
 
     private String formatCurrency(double amount) {
         return String.format("%.2f euros", amount);
+    }
+}
+
+class UncaughtException implements Thread.UncaughtExceptionHandler {
+    public void uncaughtException(Thread th, Throwable ex) {
+        System.out.println("Erro fatal: " + ex.getMessage());
+        JOptionPane.showMessageDialog(null, 
+            "Erro do Sistema. Dirija-se ao multibanco mais próximo.",
+            "Erro Fatal", JOptionPane.ERROR_MESSAGE
+        );
+        System.exit(1);
     }
 }

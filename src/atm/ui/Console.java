@@ -10,10 +10,11 @@ import atm.model.Transaction;
 public class Console {
 
     private static Scanner input = new Scanner(System.in);
-    private static Atm atm = new Atm(500);
+    private static Atm atm;
 
-    public static void run() {
+    public static void run(double startingFunds) {
         try {
+            atm = new Atm(startingFunds);
             userMenu(login());
         } catch (RuntimeException e) {
             printErrorMessage(
