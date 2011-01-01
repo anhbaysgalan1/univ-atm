@@ -137,13 +137,14 @@ public class Atm {
     }
 
     /**
-     * Pagamento de um serviço
+     * Pagamento de um serviço.
      *
      * @param description  descrição a registar nos movimentos de conta
      * @param payment      objecto do pagamento de serviços
-     * @param account
+     * @param account      objecto de conta
      */
     private void payBill(String description, Payment payment, Account account) {
+        // É possível, posteriormente, fazer algo com o objecto do pagamento
         account.processTransaction(
             Transaction.newDebit(description, payment.getAmount())
         );
