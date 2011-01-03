@@ -1,7 +1,6 @@
 
 package atm.ui;
 
-import java.util.Scanner;
 import atm.model.Atm;
 import atm.model.Account;
 import atm.model.Payment;
@@ -9,11 +8,23 @@ import atm.model.Transaction;
 
 public class Console {
 
-    private static Scanner input = new Scanner(System.in);
+    private static java.util.Scanner input;
+    private static java.io.PrintStream out;
+    private static java.io.PrintStream err;
     private static Atm atm;
 
     public static void run(double startingFunds) {
-        try {
+
+        try { // Permitir acentuação
+            out = new java.io.PrintStream(System.out, true, "UTF-8");
+            err = new java.io.PrintStream(System.err, true, "UTF-8");
+            input = new java.util.Scanner(System.in);
+        } catch (java.io.UnsupportedEncodingException e) {
+            out = System.out;
+            err = System.out;
+        }
+
+        try { // Iniciar a aplicação
             atm = new Atm(startingFunds);
             userMenu(login());
         } catch (RuntimeException e) {
@@ -32,7 +43,7 @@ public class Console {
         String pin = input.nextLine();
 
         Account account = atm.getAccountWithPin(pin);
-        printNewLine();
+        printLineBreak();
 
         if (account == null) {
             printErrorMessage("Pin inválido!");
@@ -45,12 +56,13 @@ public class Console {
     /** Menu de entrada ao utilizador */
     public static void userMenu(Account account) {
 
-        System.out.println("1. Levantamentos");
-        System.out.println("2. Consulta de saldo de conta");
-        System.out.println("3. Consulta de movimentos de conta");
-        System.out.println("4. Pagamento de serviços");
-        System.out.println("5. Depósitos");
-
+        printMenu(
+            "1. Levantamentos",
+            "2. Consulta de saldo de conta",
+            "3. Consulta de movimentos de conta",
+            "4. Pagamento de serviços",
+            "5. Depósitos"
+        );
         askInput("\n> ");
 
         try {
@@ -73,7 +85,7 @@ public class Console {
                         "Saldo Actual: " + formatCurrency(account.getBalance())
                     );
                     for (Transaction latest : account.getLatestTransactions(10)) {
-                        System.out.println(latest);
+                        out.println(latest);
                     }
                     break;
 
@@ -97,7 +109,7 @@ public class Console {
             printErrorMessage(e.getMessage());
         }
 
-        printNewLine();
+        printLineBreak();
         userMenu(login());
     }
 
@@ -105,11 +117,11 @@ public class Console {
     public static void withdrawMenu(Account account) {
 
         printHeader("Levantamento");
-
-        System.out.println("1. 20       2. 50");
-        System.out.println("3. 100      4. 150");
-        System.out.println("5. 200      6. Outros valores");
-
+        printMenu(
+            "1. 20       2. 50",
+            "3. 100      4. 150",
+            "5. 200      6. Outros valores"
+        );
         askInput("\n> ");
 
         try {
@@ -127,7 +139,7 @@ public class Console {
             printErrorMessage(e.getMessage());
         }
 
-        printNewLine();
+        printLineBreak();
     }
 
     /** Levantamento de outras importâncias */
@@ -147,10 +159,11 @@ public class Console {
     /** Menu do pagamento de serviços */
     public static void servicesPayment(Account account) {
         printHeader("Pagamento de Serviços");
-        System.out.println("1. Conta de Electricidade");
-        System.out.println("2. Conta da Água");
-        System.out.println("3. Carregamento Telemóvel");
-
+        printMenu(
+            "1. Conta de Electricidade",
+            "2. Conta da Água",
+            "3. Carregamento Telemóvel"
+        );
         askInput("\n> ");
         switch (getOption()){
             case 1: atm.payElectricityBill(getPayment(), account); break;
@@ -162,7 +175,7 @@ public class Console {
         }
 
         printStatusMessage("Pagamento efectuado com sucesso");
-        printNewLine();
+        printLineBreak();
     }
 
     /** Retorna um objecto de pagamento de serviço */
@@ -175,7 +188,7 @@ public class Console {
             askInput("Montante: ");
             double amount = input.nextDouble();
             clearInput();
-            printNewLine();
+            printLineBreak();
             return new Payment(entity, reference, amount);
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
@@ -190,7 +203,7 @@ public class Console {
             String phone = input.nextLine();
             String entity = atm.getPhoneEntity(phone);
             double amount = getPhonePaymentAmount();
-            printNewLine();
+            printLineBreak();
             return new Payment(entity, phone, amount);
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
@@ -201,10 +214,11 @@ public class Console {
     /** Menu com quantias de carregamento do telemóvel */
     public static double getPhonePaymentAmount(){
         printHeader("Montante");
-        System.out.println("1. 5 euros");
-        System.out.println("2. 10 euros");
-        System.out.println("3. 20 euros");
-
+        printMenu(
+            "1. 5 euros",
+            "2. 10 euros",
+            "3. 20 euros"
+        );
         askInput("\n> ");
         switch (getOption()) {
             case 1: return 5;
@@ -216,32 +230,7 @@ public class Console {
         }
     }
 
-
-    // Helper methods
-    private static void printHeader(String header) {
-        System.out.println("\n\n| "+header+" |\n");
-    }
-
-    private static void askInput(String msg) {
-        System.out.print(msg);
-    }
-
-    private static void printStatusMessage(String msg) {
-        System.out.flush();
-        System.out.println(msg);
-        System.out.println();
-    }
-
-    private static void printErrorMessage(String msg) {
-        System.out.flush();
-        System.err.println(msg);
-        System.err.println();
-        System.err.flush();
-    }
-
-    private static void printNewLine() {
-        System.out.println();
-    }
+    /* Métodos de ajuda */
 
     private static String formatCurrency(double amount) {
         return String.format("%.2f euros", amount);
@@ -250,7 +239,7 @@ public class Console {
     private static short getOption() {
         short option = input.nextShort();
         clearInput();
-        printNewLine();
+        printLineBreak();
         return option;
     }
 
@@ -258,5 +247,38 @@ public class Console {
         if (input.hasNextLine()) {
             input.nextLine();
         }
+    }
+
+    /* 
+     * Métodos de abstracção do output para tornar o código mais legível e
+     * facilitar a manutenção ao remover uma dependência ao método de output
+     */
+
+    private static void printHeader(String header) {
+        out.println("\n\n| "+header+" |\n");
+    }
+
+    private static void printMenu(String ... entries) {
+        for (int i = 0; i < entries.length; i++) {
+            out.println(entries[i]);
+        }
+    }
+
+    private static void askInput(String msg) {
+        out.print(msg);
+    }
+
+    private static void printStatusMessage(String msg) {
+        out.println(msg);
+        out.println();
+    }
+
+    private static void printErrorMessage(String msg) {
+        err.println(msg);
+        err.println();
+    }
+
+    private static void printLineBreak() {
+        out.println();
     }
 }
