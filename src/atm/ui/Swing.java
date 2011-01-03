@@ -503,7 +503,7 @@ public class Swing extends JFrame {
 
 class UncaughtException implements Thread.UncaughtExceptionHandler {
     public void uncaughtException(Thread th, Throwable ex) {
-        System.out.println("Erro fatal: " + ex.getMessage());
+        System.err.println("Erro fatal: " + ex.getMessage());
         JOptionPane.showMessageDialog(null, 
             "Erro do Sistema. Dirija-se ao multibanco mais próximo.",
             "Erro Fatal", JOptionPane.ERROR_MESSAGE
