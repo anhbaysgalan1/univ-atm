@@ -11,7 +11,9 @@ public class Console {
     private static java.util.Scanner input;
     private static java.io.PrintStream out;
     private static java.io.PrintStream err;
+
     private static Atm atm;
+    private static Account account;
 
     public static void run(double startingFunds) {
 
@@ -26,8 +28,8 @@ public class Console {
 
         try { // Iniciar a aplicação
             atm = new Atm(startingFunds);
-            userMenu(login());
-        } catch (RuntimeException e) {
+            login();
+        } catch (Exception e) {
             printErrorMessage(
                 "Erro do Sistema. Dirija-se ao multibanco mais próximo.\n"
               + "Diagnóstico: " + e.getMessage()
@@ -36,61 +38,59 @@ public class Console {
         }
     }
 
-    /** Autentica o utilizador com um pin, retornando uma conta válida */
-    public static Account login() {
-
+    /** Autentica o utilizador, fornecido um pin de acesso */
+    private static void login() {
         askInput("PIN: ");
         String pin = input.nextLine();
 
-        Account account = atm.getAccountWithPin(pin);
+        account = atm.getAccountWithPin(pin);
         printLineBreak();
 
         if (account == null) {
             printErrorMessage("Pin inválido!");
-            return login();
+            login();
         }
 
-        return account;
+        userMenu();
     }
 
     /** Menu de entrada ao utilizador */
-    public static void userMenu(Account account) {
+    private static void userMenu() {
 
-        printMenu(
+        printMenu(null,
             "1. Levantamentos",
             "2. Consulta de saldo de conta",
             "3. Consulta de movimentos de conta",
             "4. Pagamento de serviços",
             "5. Depósitos"
         );
-        askInput("\n> ");
 
         try {
             switch (getOption()) {
                 case 1:
-                    withdrawMenu(account);
+                    withdrawMenu();
                     break;
 
                 case 2:
                     printHeader("Saldo de conta");
                     printStatusMessage(
                         "Conta número: " + account.getNumber() + "\n" +
-                        "Saldo Actual: " + formatCurrency(account.getBalance())
+                        "Saldo Actual: " + currency(account.getBalance())
                     );
                     break;
 
                 case 3:
                     printHeader("Movimentos de conta");
                     printStatusMessage(
-                        "Saldo Actual: " + formatCurrency(account.getBalance())
+                        "Saldo Actual: " + currency(account.getBalance())
                     );
-                    for (Transaction latest : account.getLatestTransactions(10)) {
-                        out.println(latest);
+                    for (Transaction t : account.getLatestTransactions(10)) {
+                        out.println(t);
                     }
                     break;
 
                 case 4:
-                    servicesPayment(account);
+                    servicesPayment();
                     break;
 
                 case 5:
@@ -110,19 +110,17 @@ public class Console {
         }
 
         printLineBreak();
-        userMenu(login());
+        login();
     }
 
     /** Menu dos levantamentos */
-    public static void withdrawMenu(Account account) {
+    public static void withdrawMenu() {
 
-        printHeader("Levantamento");
-        printMenu(
+        printMenu("Levantamento",
             "1. 20       2. 50",
             "3. 100      4. 150",
             "5. 200      6. Outros valores"
         );
-        askInput("\n> ");
 
         try {
             switch (getOption()) {
@@ -131,7 +129,7 @@ public class Console {
                 case 3: atm.withdraw(100, account); break;
                 case 4: atm.withdraw(150, account); break;
                 case 5: atm.withdraw(200, account); break;
-                case 6: withdrawOther(account); break;
+                case 6: withdrawOther(); break;
                 default:
                     printErrorMessage("Opção inválida");
             }
@@ -143,7 +141,7 @@ public class Console {
     }
 
     /** Levantamento de outras importâncias */
-    public static void withdrawOther(Account account) {
+    public static void withdrawOther() {
         try{
             askInput("Montante: ");
             int amount = input.nextInt();
@@ -152,26 +150,26 @@ public class Console {
 
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
-            withdrawOther(account);
+            withdrawOther();
         }
     }
 
     /** Menu do pagamento de serviços */
-    public static void servicesPayment(Account account) {
-        printHeader("Pagamento de Serviços");
-        printMenu(
+    public static void servicesPayment() {
+
+        printMenu("Pagamento de Serviços",
             "1. Conta de Electricidade",
             "2. Conta da Água",
             "3. Carregamento Telemóvel"
         );
-        askInput("\n> ");
-        switch (getOption()){
+
+        switch (getOption()) {
             case 1: atm.payElectricityBill(getPayment(), account); break;
             case 2: atm.payWaterBill(getPayment(), account);       break;
             case 3: atm.payPhoneBill(getPhonePayment(), account);  break;
             default:
                 printErrorMessage("Opção inválida");
-                servicesPayment(account);
+                servicesPayment();
         }
 
         printStatusMessage("Pagamento efectuado com sucesso");
@@ -212,14 +210,12 @@ public class Console {
     }
 
     /** Menu com quantias de carregamento do telemóvel */
-    public static double getPhonePaymentAmount(){
-        printHeader("Montante");
-        printMenu(
+    public static double getPhonePaymentAmount() {
+        printMenu("Montante",
             "1. 5 euros",
             "2. 10 euros",
             "3. 20 euros"
         );
-        askInput("\n> ");
         switch (getOption()) {
             case 1: return 5;
             case 2: return 15;
@@ -232,7 +228,7 @@ public class Console {
 
     /* Métodos de ajuda */
 
-    private static String formatCurrency(double amount) {
+    private static String currency(double amount) {
         return String.format("%.2f euros", amount);
     }
 
@@ -251,17 +247,22 @@ public class Console {
 
     /* 
      * Métodos de abstracção do output para tornar o código mais legível e
-     * facilitar a manutenção ao remover uma dependência ao método de output
+     * facilitar a manutenção ao remover uma dependência ao método de output,
+     * assim como manter a interface consistente.
      */
 
     private static void printHeader(String header) {
         out.println("\n\n| "+header+" |\n");
     }
 
-    private static void printMenu(String ... entries) {
+    private static void printMenu(String header, String ... entries) {
+        if (header != null) {
+            printHeader(header);
+        }
         for (int i = 0; i < entries.length; i++) {
             out.println(entries[i]);
         }
+        askInput("\n> ");
     }
 
     private static void askInput(String msg) {
