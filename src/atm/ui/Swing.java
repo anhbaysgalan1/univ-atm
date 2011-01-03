@@ -36,9 +36,13 @@ public class Swing extends JFrame {
 
     public Swing(double startingFunds) {
         atm = new Atm(startingFunds);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
         setTitle("Multibanco");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(400, 350));
+        setLocation(screenSize.width/3, screenSize.height/5);
+
         reset();
     }
 
@@ -226,8 +230,7 @@ public class Swing extends JFrame {
         ActionListener otherWithdrawalListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    double amount = validateAmount(withdrawal.getText());
-                    atm.withdraw(amount, account);
+                    atm.withdraw(validateAmount(withdrawal.getText()), account);
                     showMainMenu();
                 } catch (IllegalArgumentException ex) {
                     showError(ex.getMessage(), withdrawal);
@@ -418,8 +421,7 @@ public class Swing extends JFrame {
         ActionListener depositListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    double amount = validateAmount(deposit.getText());
-                    atm.deposit(amount, account);
+                    atm.deposit(validateAmount(deposit.getText()), account);
                     showMainMenu();
                 } catch (IllegalArgumentException ex) {
                     showError(ex.getMessage(), deposit);
@@ -474,6 +476,10 @@ public class Swing extends JFrame {
         return newLabel;
     }
 
+    private void showError(String error, JTextField reset) {
+        showError(error, new JTextField[] {reset});
+    }
+
     private void showError(String error, JTextField[] reset) {
         JOptionPane.showMessageDialog(Swing.this, error, "Erro",
             JOptionPane.ERROR_MESSAGE
@@ -482,10 +488,6 @@ public class Swing extends JFrame {
             reset[i].setText("");
         }
         reset[0].grabFocus();
-    }
-
-    private void showError(String error, JTextField reset) {
-        showError(error, new JTextField[] {reset});
     }
 
     private double validateAmount(String value) {
