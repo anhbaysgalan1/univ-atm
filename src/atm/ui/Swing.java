@@ -189,7 +189,11 @@ public class Swing extends JFrame {
                 JButton source = (JButton) e.getSource();
                 int amount = Integer.parseInt(source.getActionCommand());
                 if (amount != 0) {
-                    atm.withdraw(amount, account);
+                    try {
+                        atm.withdraw(amount, account);
+                    } catch (IllegalArgumentException ex) {
+                        showError(ex.getMessage());
+                    }
                     showMainMenu();
                 } else {
                     updateContent(otherWithdrawalScreen());
@@ -316,7 +320,7 @@ public class Swing extends JFrame {
         JButton phone = new JButton("Carregamento Telemóvel");
 
         elect.setActionCommand("e");
-        water.setActionCommand("r");
+        water.setActionCommand("w");
         phone.setActionCommand("p");
 
         ActionListener choosePaymentListener = new ActionListener() {
@@ -481,13 +485,17 @@ public class Swing extends JFrame {
     }
 
     private void showError(String error, JTextField[] reset) {
-        JOptionPane.showMessageDialog(Swing.this, error, "Erro",
-            JOptionPane.ERROR_MESSAGE
-        );
+        showError(error);
         for (int i = 0; i < reset.length; i++) {
             reset[i].setText("");
         }
         reset[0].grabFocus();
+    }
+
+    private void showError(String error) {
+        JOptionPane.showMessageDialog(Swing.this, error, "Erro",
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 
     private double validateAmount(String value) {
