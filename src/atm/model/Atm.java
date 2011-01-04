@@ -151,8 +151,7 @@ public class Atm {
     }
 
     /**
-     * Retorna a uma entidade para um número de telemóvel em
-     * operadora conhecida.
+     * Retorna uma entidade para um número de telemóvel em operadora conhecida.
      *
      * @param phone  número de telemóvel
      * @return       entidade para ser usada num pagamento de serviços
