@@ -1,7 +1,6 @@
 
 package atm.model;
 
-import java.io.File;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.Before;

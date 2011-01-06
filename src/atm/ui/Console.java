@@ -16,7 +16,7 @@ public class Console {
     private static Account account;
 
     public static void run(double startingFunds) {
-        try { // Permitir acentuação
+        try { // Permitir acentuação na linha de comandos
             input = new java.util.Scanner(System.in);
             out = new java.io.PrintStream(System.out, true, "UTF-8");
             err = new java.io.PrintStream(System.err, true, "UTF-8");
@@ -226,18 +226,15 @@ public class Console {
     }
 
     private static int getOption() {
-        int option = askInt(null);
+        int option = askInt("\n> ");
         printLineBreak();
         return option;
     }
 
     private static int askInt(String label) {
-        if (label != null) {
-            out.print(label);
-        }
-        int value;
+        out.print(label);
         try {
-            value = input.nextInt();
+            int value = input.nextInt();
             clearInput();
             return value;
 
@@ -249,12 +246,9 @@ public class Console {
     }
 
     private static double askDouble(String label) {
-        if (label != null) {
-            out.print(label);
-        }
-        double value;
+        out.print(label);
         try {
-            value = input.nextDouble();
+            double value = input.nextDouble();
             clearInput();
             return value;
 
@@ -266,9 +260,7 @@ public class Console {
     }
 
     private static String askString(String label) {
-        if (label != null) {
-            out.print(label);
-        }
+        out.print(label);
         return input.nextLine();
     }
 
@@ -295,7 +287,6 @@ public class Console {
         for (int i = 0; i < entries.length; i++) {
             out.println(entries[i]);
         }
-        out.print("\n> ");
     }
 
     private static void printStatusMessage(String msg) {
