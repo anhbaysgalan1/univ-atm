@@ -107,7 +107,7 @@ public class Transaction implements java.io.Serializable {
      */
     @Override
     public String toString() {
-        return String.format("%s   %-35s   %-7s   %.2f",
+        return String.format("%s   %-35s   %-7s   %6.2f",
              getDateString(), description, type, amount.doubleValue()
         );
     }
@@ -159,11 +159,10 @@ public class Transaction implements java.io.Serializable {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 59 * hash + (this.date != null ? this.date.hashCode() : 0);
-        hash = 59 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 59 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 59 * hash + (this.amount != null ? this.amount.hashCode() : 0);
+        hash = 59 * hash + (date != null ? date.hashCode() : 0);
+        hash = 59 * hash + (description != null ? description.hashCode() : 0);
+        hash = 59 * hash + (type != null ? type.hashCode() : 0);
+        hash = 59 * hash + (amount != null ? amount.hashCode() : 0);
         return hash;
     }
-
 }

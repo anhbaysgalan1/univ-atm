@@ -16,11 +16,10 @@ public class Console {
     private static Account account;
 
     public static void run(double startingFunds) {
-
         try { // Permitir acentuação
+            input = new java.util.Scanner(System.in);
             out = new java.io.PrintStream(System.out, true, "UTF-8");
             err = new java.io.PrintStream(System.err, true, "UTF-8");
-            input = new java.util.Scanner(System.in);
         } catch (java.io.UnsupportedEncodingException e) {
             out = System.out;
             err = System.out;
@@ -29,7 +28,7 @@ public class Console {
         try { // Iniciar a aplicação
             atm = new Atm(startingFunds);
             login();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             printErrorMessage(
                 "Erro do Sistema. Dirija-se ao multibanco mais próximo.\n"
               + "Diagnóstico: " + e.getMessage()
@@ -40,8 +39,7 @@ public class Console {
 
     /** Autentica o utilizador, fornecido um pin de acesso */
     private static void login() {
-        askInput("PIN: ");
-        String pin = input.nextLine();
+        String pin = askString("PIN: ");
 
         account = atm.getAccountWithPin(pin);
         printLineBreak();
@@ -95,9 +93,7 @@ public class Console {
 
                 case 5:
                     printHeader("Depósito");
-                    askInput("Montante: ");
-                    int dep = input.nextInt();
-                    clearInput();
+                    double dep = askDouble("Montante: ");
                     atm.deposit(dep, account);
                     printStatusMessage("Obrigado pelo seu depósito.");
                     break;
@@ -143,9 +139,7 @@ public class Console {
     /** Levantamento de outras importâncias */
     public static void withdrawOther() {
         try{
-            askInput("Montante: ");
-            int amount = input.nextInt();
-            clearInput();
+            int amount = askInt("Montante: ");
             atm.withdraw(amount, account);
 
         } catch (IllegalArgumentException e) {
@@ -179,15 +173,13 @@ public class Console {
     /** Retorna um objecto de pagamento de serviço */
     public static Payment getPayment() {
         try {
-            askInput("Entidade: ");
-            String entity = input.nextLine();
-            askInput("Referência: ");
-            String reference = input.nextLine();
-            askInput("Montante: ");
-            double amount = input.nextDouble();
-            clearInput();
+            String entity    = askString("Entidade: ");
+            String reference = askString("Referência: ");
+            double amount    = askDouble("Montante: ");
+
             printLineBreak();
             return new Payment(entity, reference, amount);
+
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
             return getPayment();
@@ -197,12 +189,13 @@ public class Console {
     /** Retorna um objecto de pagamento de serviço, para um telemóvel */
     public static Payment getPhonePayment() {
         try {
-            askInput("Telemóvel: ");
-            String phone = input.nextLine();
+            String phone  = askString("Telemóvel: ");
             String entity = atm.getPhoneEntity(phone);
             double amount = getPhonePaymentAmount();
+
             printLineBreak();
             return new Payment(entity, phone, amount);
+
         } catch (IllegalArgumentException e) {
             printErrorMessage(e.getMessage());
             return getPhonePayment();
@@ -232,11 +225,51 @@ public class Console {
         return String.format("%.2f euros", amount);
     }
 
-    private static short getOption() {
-        short option = input.nextShort();
-        clearInput();
+    private static int getOption() {
+        int option = askInt(null);
         printLineBreak();
         return option;
+    }
+
+    private static int askInt(String label) {
+        if (label != null) {
+            out.print(label);
+        }
+        int value;
+        try {
+            value = input.nextInt();
+            clearInput();
+            return value;
+
+        } catch (java.util.InputMismatchException e) {
+            printErrorMessage("Número inteiro inválido. Tente de novo.");
+            clearInput();
+            return askInt(label);
+        }
+    }
+
+    private static double askDouble(String label) {
+        if (label != null) {
+            out.print(label);
+        }
+        double value;
+        try {
+            value = input.nextDouble();
+            clearInput();
+            return value;
+
+        } catch (java.util.InputMismatchException e) {
+            printErrorMessage("Número decimal inválido. Tente de novo.");
+            clearInput();
+            return askDouble(label);
+        }
+    }
+
+    private static String askString(String label) {
+        if (label != null) {
+            out.print(label);
+        }
+        return input.nextLine();
     }
 
     private static void clearInput() {
@@ -262,11 +295,7 @@ public class Console {
         for (int i = 0; i < entries.length; i++) {
             out.println(entries[i]);
         }
-        askInput("\n> ");
-    }
-
-    private static void askInput(String msg) {
-        out.print(msg);
+        out.print("\n> ");
     }
 
     private static void printStatusMessage(String msg) {
